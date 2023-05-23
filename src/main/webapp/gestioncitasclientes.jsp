@@ -366,16 +366,23 @@ if (usuario == null) {
 						for (int i = 0; i < gestiones.tamano(); i++) {
 						    Citas cita = horasDisponibles.get(i);
 						    gestiones.getHoraCita(i); */
-						horasDia.horarioDisponible(dia);
 						ArrayList<LocalTime> horaDisponible = horasDia.horarioDisponible(dia);
 						for (int i = 0; i < horaDisponible.size(); i++) {
 							LocalTime hora = horaDisponible.get(i);
 							/* 	String horas = horasDia.getHoraCita(i).toString();
 								String[] partesHoras = horas.split("-"); */
 						%>
-						<option value="<%=hora.getHour()%>"><%=hora.getHour()%></option>
+						<option value="<%=hora.getHour()%>"><%
+						if(hora.getMinute()<10)
+						{
+						out.println(hora.getHour()+ ":0" + hora.getMinute());%></option>
 						<%
 						}
+						else{
+							out.println(hora.getHour()+ ":" + hora.getMinute());
+						}
+						}
+						
 						%>
 					</select>
 				</form>

@@ -138,122 +138,123 @@ public class Controlador extends HttpServlet {
 				}
 				nextPage = "/registro.jsp";
 			}
-			//Mostrar horas del calendario
-//			else if (todo.equals("calendario"))
-//			{
-//				int dia = 0;
-//				//Añadimos las horas
-//				Gestiones horas = new Gestiones();
-//				horas.horarioDisponible(dia);
-//				horas.horario();
-//				ArrayList<Hora> horasDia = new ArrayList<Hora>();
-//				int idServicio = Integer.parseInt(request.getParameter("idServicio"));
-//				Date fecha;
-//
-//				try
-//				{
-//					fecha = formatoFecha.parse(request.getParameter("fecha")); 
-//					Citas nuevaCita = new Citas (idServicio,fecha);
-//					if(elCalendario==null)
-//					{
-//						// El calendario está vacío
-//						elCalendario = new ArrayList<>();
-//						elCalendario.add(nuevaCita);
-//						// Enlazar el calendario con la sesión
-//						session.setAttribute("elCalendario", elCalendario);
-//					}
-//					else
-//					{
-//						// Comprueba si la hora está ya en el calendario
-//						// Si lo está, actualizamos la hora
-//						// Si no está, la añadimos
-//						boolean encontrado = true;
-//						Iterator<Citas> iter = elCalendario.iterator();
-//						while(!encontrado&&iter.hasNext())
-//						{
-//							Citas nuevoDia = (Citas)iter.next();
-//							if(nuevoDia.getHoraCita() == nuevaCita.getHoraCita())
-//							{
-//								System.out.println("isFecha antes de añadir => "+nuevoDia.getHoraCita() +", " +nuevaCita.getHoraCita());
-//
-//								nuevaCita.setFechaCita(nuevaCita.getFechaCita(),nuevoDia.getFechaCita());
-//								encontrado = true;
-//							}
-//						}
-//						if(!encontrado)
-//						{
-//							// Lo añade nueva hora al calendario
-//							elCalendario.add(nuevaCita);
-//
-//							System.out.println("fecha despues de añadir=> " +
-//									nuevaCita.getFechaCita());
-//
-//							session.setAttribute("elCalendario", elCalendario);
-//						}
-//						// Volvemos página principal para añadir más citas
-//						nextPage = "/gestioncitasclientes.jsp";
-//					}
-//
-//				} catch (ParseException e)
-//				{
-//					System.out.println("error => " + e);
-//					e.printStackTrace();
-//				}
-//
-//				nextPage = "/gestioncitasclientes.jsp";
-//			}
-
-			//Agregamos una cita nueva al confirmar
-			else if (todo.equals("confirmar"))
-			{
-				System.out.println("Controlador Entra en confirmar cita");
-				int dia = 0;
-				idCliente = (int) session.getAttribute("idCliente"); 
-				int idTrabajadorFK = 1;
-				String idServicioStr = request.getParameter("idServicio");
-				String horaCitaStr = request.getParameter("horas-disponibles");
-				String fecha = request.getParameter("dia");
-				int idServicio = Integer.parseInt(idServicioStr);
-				Gestiones confirmar = new Gestiones();
-				//Recogemos horario disponible
-				Gestiones horas = new Gestiones();
-				horas.horarioDisponible(dia);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-				//Agregamos cita nueva
-				try
-				{
-					//					Time horaCita = (Time) sdf.parse(horaCitaStr);
-					//					Date fechaCita = sdf.parse(fecha);
-					java.util.Date fechaCita = sdf.parse(fecha); // Concatena fecha y hora
-					Time horaCita = new java.sql.Time(fechaCita.getTime()); // Utiliza java.sql.Times
-
-					confirmar.agregarCita(horaCita, fechaCita, idCliente, idServicio, idTrabajadorFK);
-					System.out.println("idcliente " + idCliente + "idservicio " +idServicio + "idTrabajadorFK " + idTrabajadorFK);
-				} catch (SQLException e2)
-				{
-					System.out.println( "error " + e2);
-					e2.printStackTrace();
-				}
-
-				catch (ParseException e)
-				{			
-					System.out.println("error " + e);
-					e.printStackTrace();
-				}
-				request.setAttribute("alertify", "confirmar");
-				nextPage = "/gestioncitasclientes.jsp";
-			}
-			//para salir de la app
-			else if (todo.equals("logout"))
-			{
-				nextPage = "/logout.jsp";
-			}
-
-			ServletContext servletContext = request.getServletContext();
-			RequestDispatcher requestDispatcher =
-					servletContext.getRequestDispatcher(nextPage);
-			requestDispatcher.forward(request, response);
 		}
+		//Mostrar horas del calendario
+					else if (todo.equals("calendario"))
+					{
+						int dia = 0;
+						//Añadimos las horas
+						Gestiones horas = new Gestiones();
+						horas.horarioDisponible(dia);
+						horas.horario();
+						ArrayList<Hora> horasDia = new ArrayList<Hora>();
+						int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+						Date fecha;
+		
+						try
+						{
+							fecha = formatoFecha.parse(request.getParameter("fecha")); 
+							Citas nuevaCita = new Citas (idServicio,fecha);
+							if(elCalendario==null)
+							{
+								// El calendario está vacío
+								elCalendario = new ArrayList<>();
+								elCalendario.add(nuevaCita);
+								// Enlazar el calendario con la sesión
+								session.setAttribute("elCalendario", elCalendario);
+							}
+							else
+							{
+								// Comprueba si la hora está ya en el calendario
+								// Si lo está, actualizamos la hora
+								// Si no está, la añadimos
+								boolean encontrado = true;
+								Iterator<Citas> iter = elCalendario.iterator();
+								while(!encontrado&&iter.hasNext())
+								{
+									Citas nuevoDia = (Citas)iter.next();
+									if(nuevoDia.getHoraCita() == nuevaCita.getHoraCita())
+									{
+										System.out.println("isFecha antes de añadir => "+nuevoDia.getHoraCita() +", " +nuevaCita.getHoraCita());
+		
+										nuevaCita.setFechaCita(nuevaCita.getFechaCita(),nuevoDia.getFechaCita());
+										encontrado = true;
+									}
+								}
+								if(!encontrado)
+								{
+									// Lo añade nueva hora al calendario
+									elCalendario.add(nuevaCita);
+		
+									System.out.println("fecha despues de añadir=> " +
+											nuevaCita.getFechaCita());
+		
+									session.setAttribute("elCalendario", elCalendario);
+								}
+								// Volvemos página principal para añadir más citas
+								nextPage = "/gestioncitasclientes.jsp";
+							}
+		
+						} catch (ParseException e)
+						{
+							System.out.println("error => " + e);
+							e.printStackTrace();
+						}
+		
+						nextPage = "/gestioncitasclientes.jsp";
+					}
+
+		//Agregamos una cita nueva al confirmar
+		else if (todo.equals("confirmar"))
+		{
+			System.out.println("Controlador Entra en confirmar cita");
+			int dia = 0;
+			idCliente = (int) session.getAttribute("idCliente"); 
+			int idTrabajadorFK = 1;
+			String idServicioStr = request.getParameter("idServicio");
+			String horaCitaStr = request.getParameter("horas-disponibles");
+			String fecha = request.getParameter("dia");
+			int idServicio = Integer.parseInt(idServicioStr);
+			Gestiones confirmar = new Gestiones();
+			//Recogemos horario disponible
+			Gestiones horas = new Gestiones();
+			horas.horarioDisponible(dia);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			//Agregamos cita nueva
+			try
+			{
+				//					Time horaCita = (Time) sdf.parse(horaCitaStr);
+				//					Date fechaCita = sdf.parse(fecha);
+				java.util.Date fechaCita = sdf.parse(fecha); // Concatena fecha y hora
+				Time horaCita = new java.sql.Time(fechaCita.getTime()); // Utiliza java.sql.Times
+
+				confirmar.agregarCita(horaCita, fechaCita, idCliente, idServicio, idTrabajadorFK);
+				System.out.println("idcliente " + idCliente + "idservicio " +idServicio + "idTrabajadorFK " + idTrabajadorFK);
+			} catch (SQLException e2)
+			{
+				System.out.println( "error " + e2);
+				e2.printStackTrace();
+			}
+
+			catch (ParseException e)
+			{			
+				System.out.println("error " + e);
+				e.printStackTrace();
+			}
+			request.setAttribute("alertify", "confirmar");
+			nextPage = "/gestioncitasclientes.jsp";
+		}
+		//para salir de la app
+		else if (todo.equals("logout"))
+		{
+			nextPage = "/logout.jsp";
+		}
+
+		ServletContext servletContext = request.getServletContext();
+		RequestDispatcher requestDispatcher =
+				servletContext.getRequestDispatcher(nextPage);
+		requestDispatcher.forward(request, response);
 	}
 }
+
 
