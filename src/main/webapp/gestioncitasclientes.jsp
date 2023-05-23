@@ -166,60 +166,59 @@ if (usuario == null) {
 	}
 	%>
 	<div class="justify-content-center text-center">
-		<form class="mx-1 mx-md-4" name="areacliente" action="controlador"
-			method="POST">
-			<input type="hidden" name="todo" value="areacliente">
-			<div class="alert alert-info" role="alert">
-				<table class="table table-hover">
-					<tr>
-						<th class='text-center'>Próxima cita</th>
-					</tr>
-					<%
-					Gestiones gestiones = new Gestiones();//objeto clase gestiones
-					ArrayList<Servicios> listaServicios = gestiones.getServicios();
-					ArrayList<Citas> listadoCitas = gestiones.getInfoCitas(idCliente);
-					boolean tieneCita = false;
+		<input type="hidden" name="todo" value="areacliente">
+		<div class="alert alert-info" role="alert">
+			<table class="table table-hover">
+				<tr>
+					<th class='text-center'>Próxima cita</th>
+				</tr>
+				<%
+				Gestiones gestiones = new Gestiones();//objeto clase gestiones
+				ArrayList<Servicios> listaServicios = gestiones.getServicios();
+				ArrayList<Citas> listadoCitas = gestiones.getInfoCitas(idCliente);
+				boolean tieneCita = false;
 
-					for (int j = 0; j < listadoCitas.size(); j++) {
-						Citas cita = listadoCitas.get(j);
-						Servicios servicio = listaServicios.get(j);
-						//buscamos el idCliente para saber si tiene cita
-						if (cita.getIdClienteFK() == idCliente) {
+				for (int j = 0; j < listadoCitas.size(); j++) {
+					Citas cita = listadoCitas.get(j);
+					Servicios servicio = listaServicios.get(j);
+					//buscamos el idCliente para saber si tiene cita
+					if (cita.getIdClienteFK() == idCliente) {
 
-							/* Formateamos fecha con split */
-							String fecha = cita.getFechaCita().toString();
-							String[] partesFecha = fecha.split("-");
-							/* Formateamos hora */
-							String hora = cita.getHoraCita().toString();
-							String[] partesHora = hora.split(":");
+						/* Formateamos fecha con split */
+						String fecha = cita.getFechaCita().toString();
+						String[] partesFecha = fecha.split("-");
+						/* Formateamos hora */
+						String hora = cita.getHoraCita().toString();
+						String[] partesHora = hora.split(":");
 
-							mensaje = "Su próxima cita es <b>" + partesFecha[2] + "-" + partesFecha[1] + "-" + partesFecha[0]
-							+ "</b> a las <b>" + partesHora[0] +":"+partesHora[1] + " h</b> para " + servicio.getTipoServicio();
-							tieneCita = true;
-							break; // Si encontramos la cita del cliente, podemos salir del bucle
-						}
+						mensaje = "Su próxima cita es <b>" + partesFecha[2] + "-" + partesFecha[1] + "-" + partesFecha[0]
+						+ "</b> a las <b>" + partesHora[0] + ":" + partesHora[1] + " h</b> para " + servicio.getTipoServicio();
+						tieneCita = true;
+						break; // Si encontramos la cita del cliente, podemos salir del bucle
 					}
-					//Si no tiene informamos también
-					if (!tieneCita) {
-						mensaje = "Aún no tiene citas.";
-					}
+				}
+				//Si no tiene informamos también
+				if (!tieneCita) {
+					mensaje = "Aún no tiene citas.";
+				}
 
-					request.setAttribute("response", mensaje);
-					%>
-					<tr>
-						<!-- Mostramos mensaje -->
-						<td><%=mensaje%></td>
-					</tr>
-				</table>
-			</div>
-		</form>
+				request.setAttribute("response", mensaje);
+				%>
+				<tr>
+					<!-- Mostramos mensaje -->
+					<td><%=mensaje%></td>
+				</tr>
+			</table>
+		</div>
 	</div>
 	<hr>
-	<section>
-		<div class="justify-content-center text-center pt-4">
-			<h3>Reserva una cita</h3>
-			<!-- formulario-->
-			<form name="AgregarForm" action="controlador" method="POST">
+	<form name="confirmar" action="controlador" method="POST">
+		<section>
+			<div class="justify-content-center text-center pt-4">
+				<h3>Reserva una cita</h3>
+				<!-- formulario-->
+
+				<!-- <form name="AgregarForm" action="controlador" method="POST"> -->
 				<div class="text-center form-floating">
 					<label class="color:#000;" for="floatingSelect">Seleccione
 						un tratamiento/servicio:</label><br> <select class="form-select"
@@ -245,17 +244,15 @@ if (usuario == null) {
 						</option>
 					</select>
 				</div>
-			</form>
-		</div>
-		<br> <br>
-	</section>
-	<!-- Mostramos calendario y fecha -->
-	<div class="my-5 justify-content-center text-center">
-		<div class="row">
-			<!-- <div class="col-md-6 mx-auto"> -->
-			<div class="calendar col-md-6 mx-auto">
-				<form name="calendario" action="controlador" method="POST">
-					<input type="hidden" name="todo" value="calendario">
+			</div>
+			<br> <br>
+		</section>
+		<!-- Mostramos calendario y fecha -->
+		<div class="my-5 justify-content-center text-center">
+			<div class="row">
+				<!-- <div class="col-md-6 mx-auto"> -->
+				<div class="calendar col-md-6 mx-auto">
+					<!-- <input type="hidden" name="todo" value="calendario"> -->
 					<div class="calendar-header">
 						<%
 						/* Controlador formato = new Controlador(); */
@@ -372,32 +369,29 @@ if (usuario == null) {
 							/* 	String horas = horasDia.getHoraCita(i).toString();
 								String[] partesHoras = horas.split("-"); */
 						%>
-						<option value="<%=hora.getHour()%>"><%
-						if(hora.getMinute()<10)
-						{
-						out.println(hora.getHour()+ ":0" + hora.getMinute());%></option>
+						<option value="<%=hora.getHour()%>">
+							<%
+							if (hora.getMinute() < 10) {
+								out.println(hora.getHour() + ":0" + hora.getMinute());
+							%>
+						</option>
 						<%
+						} else {
+						out.println(hora.getHour() + ":" + hora.getMinute());
 						}
-						else{
-							out.println(hora.getHour()+ ":" + hora.getMinute());
 						}
-						}
-						
 						%>
 					</select>
-				</form>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="text-center">
-		<form name="confirmar" action="controlador" method="POST">
+		<div class="text-center">
 			<button name="todo" value="confirmarCita()" onclick="confirmarCita()"
 				class="btn btn-success boton">Confirmar</button>
-		</form>
-		<br> <br>
-	</div>
-
+			<br> <br>
+		</div>
+	</form>
 	<!-- Cambio de colores  -->
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
@@ -430,9 +424,7 @@ if (alertify != null && alertify.equals("confirmar")) {%>
 				alertify.error("Su cita ha sido cancelada.");
 				window.location.href = "gestioncitasclientes.jsp";
 				});
-		<%
-		}
-		%>
+		<%}%>
 	} 
 		
 	

@@ -140,69 +140,70 @@ public class Controlador extends HttpServlet {
 			}
 		}
 		//Mostrar horas del calendario
-					else if (todo.equals("calendario"))
+		else if (todo.equals("confirmar"))
+		{
+			int dia = 0;
+			//Añadimos las horas
+			Gestiones horas = new Gestiones();
+			horas.horarioDisponible(dia);
+			horas.horario();
+			ArrayList<Hora> horasDia = new ArrayList<Hora>();
+			int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+			Date fecha;
+
+			try
+			{
+				fecha = formatoFecha.parse(request.getParameter("dia")); 
+				System.out.println("dia "+ fecha);
+				Citas nuevaCita = new Citas (idServicio,fecha);
+				if(elCalendario==null)
+				{
+					// El calendario está vacío
+					elCalendario = new ArrayList<>();
+					elCalendario.add(nuevaCita);
+					// Enlazar el calendario con la sesión
+					session.setAttribute("elCalendario", elCalendario);
+				}
+				else
+				{
+					// Comprueba si la hora está ya en el calendario
+					// Si lo está, actualizamos la hora
+					// Si no está, la añadimos
+					boolean encontrado = true;
+					Iterator<Citas> iter = elCalendario.iterator();
+					while(!encontrado&&iter.hasNext())
 					{
-						int dia = 0;
-						//Añadimos las horas
-						Gestiones horas = new Gestiones();
-						horas.horarioDisponible(dia);
-						horas.horario();
-						ArrayList<Hora> horasDia = new ArrayList<Hora>();
-						int idServicio = Integer.parseInt(request.getParameter("idServicio"));
-						Date fecha;
-		
-						try
+						Citas nuevoDia = (Citas)iter.next();
+						if(nuevoDia.getHoraCita() == nuevaCita.getHoraCita())
 						{
-							fecha = formatoFecha.parse(request.getParameter("fecha")); 
-							Citas nuevaCita = new Citas (idServicio,fecha);
-							if(elCalendario==null)
-							{
-								// El calendario está vacío
-								elCalendario = new ArrayList<>();
-								elCalendario.add(nuevaCita);
-								// Enlazar el calendario con la sesión
-								session.setAttribute("elCalendario", elCalendario);
-							}
-							else
-							{
-								// Comprueba si la hora está ya en el calendario
-								// Si lo está, actualizamos la hora
-								// Si no está, la añadimos
-								boolean encontrado = true;
-								Iterator<Citas> iter = elCalendario.iterator();
-								while(!encontrado&&iter.hasNext())
-								{
-									Citas nuevoDia = (Citas)iter.next();
-									if(nuevoDia.getHoraCita() == nuevaCita.getHoraCita())
-									{
-										System.out.println("isFecha antes de añadir => "+nuevoDia.getHoraCita() +", " +nuevaCita.getHoraCita());
-		
-										nuevaCita.setFechaCita(nuevaCita.getFechaCita(),nuevoDia.getFechaCita());
-										encontrado = true;
-									}
-								}
-								if(!encontrado)
-								{
-									// Lo añade nueva hora al calendario
-									elCalendario.add(nuevaCita);
-		
-									System.out.println("fecha despues de añadir=> " +
-											nuevaCita.getFechaCita());
-		
-									session.setAttribute("elCalendario", elCalendario);
-								}
-								// Volvemos página principal para añadir más citas
-								nextPage = "/gestioncitasclientes.jsp";
-							}
-		
-						} catch (ParseException e)
-						{
-							System.out.println("error => " + e);
-							e.printStackTrace();
+							System.out.println("isFecha antes de añadir => "+nuevoDia.getHoraCita() +", " +nuevaCita.getHoraCita());
+
+							nuevaCita.setFechaCita(nuevaCita.getFechaCita(),nuevoDia.getFechaCita());
+							encontrado = true;
 						}
-		
-						nextPage = "/gestioncitasclientes.jsp";
 					}
+					if(!encontrado)
+					{
+						// Lo añade nueva hora al calendario
+						elCalendario.add(nuevaCita);
+
+						System.out.println("fecha despues de añadir=> " +
+								nuevaCita.getFechaCita());
+
+						session.setAttribute("elCalendario", elCalendario);
+					}
+					// Volvemos página principal para añadir más citas
+					nextPage = "/gestioncitasclientes.jsp";
+				}
+
+			} catch (ParseException e)
+			{
+				System.out.println("error => " + e);
+				e.printStackTrace();
+			}
+
+			nextPage = "/gestioncitasclientes.jsp";
+		}
 
 		//Agregamos una cita nueva al confirmar
 		else if (todo.equals("confirmar"))
