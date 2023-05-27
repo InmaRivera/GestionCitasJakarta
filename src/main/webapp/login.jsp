@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
- <%@ page session="true" import="java.util.*, gestioncitas.*" %>
+<%@ page session="true" import="java.util.*, gestioncitas.*"%>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -46,13 +46,7 @@
 </style>
 
 <body>
-	<%
-			String mensaje = (String) request.getAttribute("response");
-			if(mensaje != null){
-				out.println(mensaje);
-				request.removeAttribute("response");
-			}
-		%>
+
 	<section class="vh-100  justify-content-center align-items-center"
 		style="background-color: #eee;">
 		<div class="container py-5 h-100">
@@ -66,18 +60,26 @@
 
 								<div class="text-center">
 									<img
-										src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+										src="https://i.pinimg.com/originals/58/c2/53/58c253f9dbde6c2ed7f74eedc4ddc7a2.jpg"
 										style="width: 185px;" alt="logo">
+									
 									<h4 class="mt-1 mb-5 pb-1">Acceder a tu perfil</h4>
-								</div>
 
+								</div>
+								<%
+									String mensaje = (String) request.getAttribute("response");
+									if(mensaje != null){
+									out.println(mensaje);
+									request.removeAttribute("response");
+									}
+									%>
 								<form method="post" action="login">
 									<p>Por favor, conéctese con su cuenta</p>
 
 									<div class="form-outline mb-4">
-			
-										<input type="exampleInputEmail1" class="form-control" name="usuario"
-											id="usuario" placeholder="Nombre usuario" />
+
+										<input type="exampleInputEmail1" class="form-control"
+											name="usuario" id="usuario" placeholder="Nombre usuario" />
 										<!-- <label class="form-label" for="form2Example11">Username</label> -->
 									</div>
 

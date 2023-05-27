@@ -101,18 +101,18 @@ public class Controlador extends HttpServlet {
 			if (nombre.length()==0 && apellidos.length()==0 && telefono.length()==0 && email.length()==0) 
 			{
 				//Respuesta //Avisamos que debe rellenar los campos
-				request.setAttribute("response","<h3 class='text-center mb-4 text-danger'>Error! Debe introducir sus datos, todos los campos son obligatorios </h3>");
+				request.setAttribute("response","<div class='alert alert-danger text-center' role='alert'><h3 class='text-center mb-4 text-danger'>Error! Debe introducir sus datos, todos los campos son obligatorios</h3></div>");
 				nextPage = "/registro.jsp";
 			}
 			else if (telefono.length()==0 && email.length()==0)
 			{
 				//Respuesta //Avisamos que debe rellenar los campos
-				request.setAttribute("response","<h3 class='text-center mb-4 text-danger'>Error! Debe introducir sus datos, todos los campos son obligatorios </h3>");
+				request.setAttribute("response","<div class='alert alert-danger text-center' role='alert'><h3 class='text-center mb-4 text-danger'>Error! Debe introducir sus datos, todos los campos son obligatorios</h3></div>");
 				nextPage = "/registro.jsp";
 			}
 			else if(clave.length()==0 && clave2.length()==0)
 			{
-				request.setAttribute("response","<h3 class='text-center mb-4 text-danger'>Error! Debe introducir su clave</h3>");
+				request.setAttribute("response","<div class='alert alert-danger text-center' role='alert'><h3 class='text-center mb-4 text-danger'>Error! Debe introducir su clave</h3></div>");
 				nextPage = "/registro.jsp";
 			}
 			//Si todo está completo hacemos la inserción
@@ -121,7 +121,7 @@ public class Controlador extends HttpServlet {
 				if(!clave.equals(clave2))
 				{
 					// las claves no coinciden
-					request.setAttribute("response","<h3 class='text-center mb-4 text-danger'>Error! Las claves deben coincidir</h3>");
+					request.setAttribute("response","<div class='alert alert-danger text-center' role='alert'><h3 class='text-center mb-4 text-danger'>Error! Las claves deben coincidir</h3></div>");
 					nextPage = "/registro.jsp";
 				}
 				else 
@@ -131,12 +131,12 @@ public class Controlador extends HttpServlet {
 					{
 						//llamamos al método insertar usuario 
 						gestioncitas.insertarUsuario(idUsuario, nombre, apellidos, telefono, email, clave, idUsuarioFK);
-						request.setAttribute("response","<h3 class='text-center text-success mb-4'> El usuario "+ nombre +" ha sido creado correctamente</h3>");
+						request.setAttribute("response","<div class='alert alert-success text-center' role='alert'> <h3 class='text-center text-success mb-4'> El usuario "+ nombre +" ha sido creado correctamente</h3></div>");
 						nextPage = "/registro.jsp";
 					} 
 					catch (SQLException e)
 					{
-						request.setAttribute("response","<h3 class='text-danger'>Este usuario ya está registrado</h3>" );
+						request.setAttribute("response","<div class='alert alert-danger text-center' role='alert'><h3 class='text-danger'>Este usuario ya está registrado</h3></div>");
 						nextPage = "/registro.jsp";
 					}
 
@@ -159,26 +159,35 @@ public class Controlador extends HttpServlet {
 			int mesActual = cal.get(Calendar.MONTH) + 1;
 			mesActual = Calendar.DAY_OF_MONTH;
 			int diaSemana = cal.get(Calendar.DAY_OF_WEEK);
-			int diaActual = Integer.parseInt(request.getParameter("dias"));
-			String mesAnioActual = Year.now() +"-" + mesActual + "-" + diaActual; // Agregar el año actual
-			Date fecha=null;
+			String diaParam = request.getParameter("data-dia");
+			int diaActual = 0;
+	
+
+//			String mesAnioActual = Year.now() +"-" + mesActual + "-" + diaActual; // Agregar el año actual
+//			Date fecha = Date.parse(mesAnioActual);
 			String horaParam = request.getParameter("horas");//Sacamos hora
 			Time hora = Time.valueOf(horaParam + ":00");//transformamos hora
+			
+			// Extraer las partes de la hora
+			String[] partesHora = horaParam.split(":");
+			int horas, minutos, segundos;
 			// Verificar si el formato de la cadena es válido
-			if (horaParam != null) {
-				if (horaParam.matches("\\d{2}:\\d{2}:\\d{2}")) {
-					// Extraer las partes de la hora
-					String[] partesHora = horaParam.split(":");
-					int horas = Integer.parseInt(partesHora[0]);
-					int minutos = Integer.parseInt(partesHora[1]);
-					int segundos = Integer.parseInt(partesHora[2]);
+			if (horaParam != null && diaParam != null) {
+				
+				if (partesHora.length == 3) {
+										
+					 horas = Integer.parseInt(partesHora[0]);
+					 minutos = Integer.parseInt(partesHora[1]);
+					 segundos = Integer.parseInt(partesHora[2]);
 
 					// Crear el objeto Time con los valores extraídos
 					hora = new Time(horas, minutos, segundos);
 
 					try {
-						Date parsed =  formatoFecha.parse(mesAnioActual);
-						fecha = new Date(parsed.getTime());
+						diaActual = Integer.parseInt(diaParam);
+						String mesAnioActual = cal.get(Calendar.YEAR) + "-" + mesActual + "-" + diaActual;
+						Date fecha =  formatoFecha.parse(mesAnioActual);
+						fecha = new Date(fecha.getTime());
 						System.out.println("dia "+ mesAnioActual  + " hora " + hora + " servicio " + idServicio );
 						Citas nuevaCita = new Citas(idServicio, fecha, hora);
 
@@ -209,7 +218,7 @@ public class Controlador extends HttpServlet {
 
 					} catch(Exception e) {
 
-						request.setAttribute("response","<h3 class='text-danger'>No se ha podido realizar la cita</h3>" );
+						request.setAttribute("alertify","cancelar" );
 
 						System.out.println("Error occurred"+ e.getMessage());
 					}
@@ -219,7 +228,7 @@ public class Controlador extends HttpServlet {
 			session.setAttribute("elCalendario", elCalendario);
 
 			// Volvemos a la página principal para añadir más citas
-			request.setAttribute("response","<h3 class='text-success'>Cita realizada</h3>" );
+			request.setAttribute("alerty","confirmar" );
 
 			nextPage = "/gestioncitasclientes.jsp";
 
@@ -230,10 +239,13 @@ public class Controlador extends HttpServlet {
 			System.out.println("Controlador Entra en confirmar cita");
 			int dia = 0;
 			int idTrabajadorFK = 1;
+			int idServicioFK = 0;
 			//		    String fecha = request.getParameter("dias");
 			Citas citas = new Citas();
 			Gestiones confirmar = new Gestiones();
 			idCliente  = (int)session.getAttribute("idCliente");
+			int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+			idServicio = idServicioFK;
 			int idClienteFK = idCliente;
 			if (elCalendario != null) {
 				for (Citas item : elCalendario) {
@@ -249,16 +261,17 @@ public class Controlador extends HttpServlet {
 					nextPage = "/gestioncitasclientes.jsp";
 					System.out.println("se acepta cita");
 				}
-			} else {
-				// Manejar el caso cuando elCalendario es nulo
-				if(elCalendario == null)
-				{
-					//		    		request.setAttribute("alertify", "cancelar");
-					//		    		 nextPage = "/gestioncitasclientes.jsp";
-					System.out.println("se cancela cita");
-				}
+			} 
+//			else {
+//				// Manejar el caso cuando elCalendario es nulo
+//				if(elCalendario == null)
+//				{
+//					//		    		request.setAttribute("alertify", "cancelar");
+//					//		    		 nextPage = "/gestioncitasclientes.jsp";
+//					System.out.println("se cancela cita");
+//				}
 			}
-		}
+		
 
 		//para salir de la app
 		//		else if (todo.equals("logout"))

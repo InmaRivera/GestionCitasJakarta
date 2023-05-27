@@ -250,7 +250,7 @@ if (usuario == null) {
 			<br> <br>
 		</section>
 		<!-- Mostramos calendario y fecha -->
-		<!-- <input type="hidden" name="todo" value="areacliente"> -->
+		<!-- <input type="hidden" name="todo" value="dias"> -->
 		<div class="my-5 justify-content-center text-center">
 			<div class="row">
 				<!-- <div class="col-md-6 mx-auto"> -->
