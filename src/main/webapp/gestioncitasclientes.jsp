@@ -166,7 +166,7 @@ if (usuario == null) {
 	}
 	%>
 	<div class="justify-content-center text-center">
-		<input type="hidden" name="todo" value="areacliente">
+		<!-- <input type="hidden" name="todo" value="areacliente"> -->
 		<div class="alert alert-info" role="alert">
 			<table class="table table-hover">
 				<tr>
@@ -212,13 +212,14 @@ if (usuario == null) {
 		</div>
 	</div>
 	<hr>
-	<form name="confirmar" action="controlador" method="POST">
+	<form name="AgregarForm" action="controlador" method="POST">
+		<input type="hidden" name="todo" value="areacliente">
 		<section>
 			<div class="justify-content-center text-center pt-4">
 				<h3>Reserva una cita</h3>
 				<!-- formulario-->
 
-				<!-- <form name="AgregarForm" action="controlador" method="POST"> -->
+				<!-- 	<form name="AgregarForm" action="controlador" method="POST"> -->
 				<div class="text-center form-floating">
 					<label class="color:#000;" for="floatingSelect">Seleccione
 						un tratamiento/servicio:</label><br> <select class="form-select"
@@ -226,6 +227,7 @@ if (usuario == null) {
 						aria-label="Floating label select example">
 						<!-- código java  -->
 						<%
+						ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
 						Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
 						ArrayList<Servicios> listaservicios = new ArrayList<Servicios>();
 						//servicio.servicios(); //Llamamos al método para sacar la información de servicios de la base de datos
@@ -237,7 +239,7 @@ if (usuario == null) {
 
 						<option class="text-center" value="<%=servicio.getIdServicio(i)%>">
 							<!-- Mostramos solo los de interés, precio y nombre del servicio -->
-							<%=servicio.getTipoServicio(i) + " " + servicio.getPrecioServicio(i) + " € "%>
+							<%=servicio.getTipoServicio(i) + " " + servicio.getPrecioServicio(i) + "0 € "%>
 							<%
 							}
 							%>
@@ -248,11 +250,12 @@ if (usuario == null) {
 			<br> <br>
 		</section>
 		<!-- Mostramos calendario y fecha -->
+		<!-- <input type="hidden" name="todo" value="areacliente"> -->
 		<div class="my-5 justify-content-center text-center">
 			<div class="row">
 				<!-- <div class="col-md-6 mx-auto"> -->
 				<div class="calendar col-md-6 mx-auto">
-					<!-- <input type="hidden" name="todo" value="calendario"> -->
+
 					<div class="calendar-header">
 						<%
 						/* Controlador formato = new Controlador(); */
@@ -301,10 +304,11 @@ if (usuario == null) {
 							<tr>
 								<%
 								int dia = 0;
-								Gestiones horasDia = new Gestiones();
-								horasDia.horario();
-								horasDia.horarioDisponible(dia);
-								ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
+								Gestiones horasDia = new Gestiones(); 
+								/* horasDia.calendario(); */
+							/* 	horasDia.horario();*/
+								horasDia.horarioDisponible(dia); 
+								/* ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario"); */
 
 								for (int i = 1; i <= numDias; i++) {
 									// Obtener el día de la semana para el día actual
@@ -318,8 +322,7 @@ if (usuario == null) {
 
 								<td
 									class="<%=diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available"%>"
-									name="dia" id="dia"
-									data-horas="<%=horasDia.horarioDisponible(dia)%>"><%=i%></td>
+									data-dia="<%=i%>"><%=i%></td>
 
 								<%-- 
 								<td
@@ -340,24 +343,10 @@ if (usuario == null) {
 						</tbody>
 					</table>
 
-					<table class="table">
-						<thead>
-							<tr>
-								<th>Horas disponibles</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td id="horas-disponibles"
-									data-horas="<%=horasDia.horarioDisponible(dia)%>"></td>
-							</tr>
-							<%-- 	<% } %> --%>
-						</tbody>
-					</table>
+					<label>Seleccionar hora</label>
+					<!-- 	<input type="hidden" name="todo" value="areacliente"> -->
+					<select name="horas" id="horas-disponibles">
 
-
-					<select name="horas-disponibles" id="horas-disponibles">
-						<option value="">Seleccionar hora</option>
 						<%
 						/* horasDia.horarioDisponible(dia);
 						for (int i = 0; i < gestiones.tamano(); i++) {
@@ -369,7 +358,8 @@ if (usuario == null) {
 							/* 	String horas = horasDia.getHoraCita(i).toString();
 								String[] partesHoras = horas.split("-"); */
 						%>
-						<option value="<%=hora.getHour()%>">
+						<option
+							data-horas="<%=hora.getHour() +":0" + hora.getMinute()+ ":0" + hora.getSecond()%>">
 							<%
 							if (hora.getMinute() < 10) {
 								out.println(hora.getHour() + ":0" + hora.getMinute());
@@ -382,13 +372,32 @@ if (usuario == null) {
 						}
 						%>
 					</select>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Horas y día seleccionado:</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td id="dias-disponibles"></td>
+							</tr>
+							<tr>
+								<td id="horas-disponibles"></td>
+							</tr>
+
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
 
 		<div class="text-center">
-			<button name="todo" value="confirmarCita()" onclick="confirmarCita()"
+
+			<!-- <input type="hidden" name="todo" value="confirmar"> -->
+			<button name="todo" value="confirmar" onclick="confirmarCita()"
 				class="btn btn-success boton">Confirmar</button>
+
 			<br> <br>
 		</div>
 	</form>
@@ -401,32 +410,32 @@ if (usuario == null) {
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
 	<script>
-		// Seleccionar un día
+		// Seleccionar un día disponible
 		$('.calendar td.available').on('click', function() {
 			$('.calendar td.selected').removeClass('selected');
 			$(this).addClass('selected');
+			 // Obtener el día seleccionado
+			  let diaSeleccionado = $(this).data('dia');
+			  $('#dias-disponibles').html(diaSeleccionado);
+			  // Obtener las horas disponibles para el día seleccionado
 			// Aquí se hace la llamada para obtener los horarios disponibles para ese día
 			let horas = $(this).data('horas');
 			$('#horas-disponibles').html(horas);
 		});
-
+	
 		//mostramos mensaje de alerta al confirmar
-	function confirmarCita() {
-		<%String alertify = (String) request.getAttribute("alertify");
-if (alertify != null && alertify.equals("confirmar")) {%>
-		alertify.confirm("¿Está seguro de confirmar su cita?", function() {
-		// Aquí muestra el mensaje para confirmar la cita
-		alertify.success("¡Su cita ha sido confirmada!");
-		window.location.href = "gestioncitasclientes.jsp";		
-		}, 	
-		<%} else if (alertify != null && alertify.equals("cancelar")) {%>	function() {
-			// Aquí muestra el mensaje para cancelar la cita
-				alertify.error("Su cita ha sido cancelada.");
-				window.location.href = "gestioncitasclientes.jsp";
-				});
-		<%}%>
-	} 
-		
+function confirmarCita() {
+  var alertify = "<%=request.getAttribute("alertify") %>";
+  if (alertify != null && alertify === "confirmar") {
+    alertify.confirm("¿Está seguro de confirmar su cita?", function() {
+      alertify.success("¡Su cita ha sido confirmada!");
+      window.location.href = "gestioncitasclientes.jsp";
+    }, function() {
+      alertify.error("Su cita ha sido cancelada.");
+      window.location.href = "gestioncitasclientes.jsp";
+    });
+  }
+}
 	
 	</script>
 </body>

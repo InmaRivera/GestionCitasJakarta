@@ -143,6 +143,7 @@ public class Gestiones
 		horas.add(new Hora(20, 0));
 	    return horas;
 	
+	
 	}
 	public ArrayList<LocalTime> horarioDisponible(int dia)
 	{
@@ -172,7 +173,7 @@ public class Gestiones
 			horasDisponibles.add(hora);
 			// Imprimir horas disponibles
 //			horasDisponibles.forEach(System.out::println);
-			System.out.println(horasDisponibles + " desde gestiones");
+//			System.out.println(horasDisponibles + " desde gestiones");
 		}
 		catch (ServletException e)
 		{

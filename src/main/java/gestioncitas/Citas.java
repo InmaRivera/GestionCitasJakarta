@@ -40,10 +40,11 @@ public class Citas
 		this.telefonoUsuario = telefonoUsuario;
 	}
 
-	public Citas(int idServicio, java.util.Date fecha)
+	public Citas(int idServicio, java.util.Date fecha, Time hora)
 	{
 		this.idServicioFK = idServicio;
 		this.fechaCita = (Date) fecha;
+		this.horaCita = hora;
 	}
 	public int getDiaSemana()
 	{
