@@ -216,7 +216,7 @@ public class Gestiones
 		{
 			pool.Conectar();
 
-			String infoCitas = "select *  from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where idCliente;";
+			String infoCitas = "select *  from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente;";
 			ResultSet rs = pool.statement.executeQuery(infoCitas);
 			Citas infoCita;
 			
@@ -254,7 +254,7 @@ public class Gestiones
 		try
 		{
 			pool.Conectar();
-			String citas = "select * from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where idCliente = "+idCliente+";";
+			String citas = "select * from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente = "+idCliente+";";
 			System.out.println(citas);
 //			System.out.println("idUsuario =>" + tipoUsuario);
 //			System.out.println("idCLiente " + idCliente);
