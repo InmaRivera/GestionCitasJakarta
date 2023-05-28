@@ -25,6 +25,7 @@
 	src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
+
 <style>
 @import
 	url('https://fonts.googleapis.com/css2?family=Pacifico&family=Shantell+Sans:ital,wght@0,300;1,300&display=swap')
@@ -130,7 +131,7 @@ section {
 </style>
 <%
 String usuario = (String) session.getAttribute("usuario");
-int idCliente = (int) session.getAttribute("idCliente");;
+int idCliente = (int) session.getAttribute("idCliente");
 if (usuario == null) {
 	response.sendRedirect("./login.jsp");
 }
@@ -212,12 +213,11 @@ if (usuario == null) {
 		</div>
 	</div>
 	<hr>
-	<form name="AgregarForm" action="controlador" method="POST">
+	<form name="confirmar" action="controlador" method="POST">
 		<input type="hidden" name="todo" value="areacliente">
 		<section>
 			<div class="justify-content-center text-center pt-4">
 				<h3>Reserva una cita</h3>
-				<!-- formulario-->
 
 				<!-- 	<form name="AgregarForm" action="controlador" method="POST"> -->
 				<div class="text-center form-floating">
@@ -304,10 +304,10 @@ if (usuario == null) {
 							<tr>
 								<%
 								int dia = 0;
-								Gestiones horasDia = new Gestiones(); 
+								Gestiones horasDia = new Gestiones();
 								/* horasDia.calendario(); */
-							/* 	horasDia.horario();*/
-								horasDia.horarioDisponible(dia); 
+								/* 	horasDia.horario();*/
+								horasDia.horarioDisponible(dia);
 								/* ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario"); */
 
 								for (int i = 1; i <= numDias; i++) {
@@ -359,7 +359,7 @@ if (usuario == null) {
 								String[] partesHoras = horas.split("-"); */
 						%>
 						<option
-							data-horas="<%=hora.getHour() +":0" + hora.getMinute()+ ":0" + hora.getSecond()%>">
+							data-horas="<%=hora.getHour() + ":0" + hora.getMinute() + ":0" + hora.getSecond()%>">
 							<%
 							if (hora.getMinute() < 10) {
 								out.println(hora.getHour() + ":0" + hora.getMinute());
@@ -382,25 +382,31 @@ if (usuario == null) {
 							<tr>
 								<td id="dias-disponibles"></td>
 							</tr>
+							<%
+							if (horasDisponibles != null && horasDisponibles.size() > 0) {
+							%>
 							<tr>
 								<td id="horas-disponibles"></td>
 							</tr>
-
+							<%
+							}
+							%>
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
-
-		<div class="text-center">
-
-			<!-- <input type="hidden" name="todo" value="confirmar"> -->
-			<button name="todo" value="confirmar" onclick="confirmarCita()"
-				class="btn btn-success boton">Confirmar</button>
-
-			<br> <br>
-		</div>
 	</form>
+	<div class="text-center">
+		<!-- 		<input  type="hidden" name="todo" onclick="confirmarCita()" value="agregarCita">
+ -->
+ 		<input class="btn btn-success boton" type="submit" name="confirmar" onclick="confirmarCita()" value="Confirmar">
+		<button name="todo" value="confirmar" class="btn btn-success boton"
+			onclick="confirmarCita()">Confirmar</button>
+
+		<br> <br>
+	</div>
+
 	<!-- Cambio de colores  -->
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
@@ -424,7 +430,7 @@ if (usuario == null) {
 		});
 	
 		//mostramos mensaje de alerta al confirmar
-function confirmarCita() {
+<%--  function confirmarCita() {
   var alertify = "<%=request.getAttribute("alertify") %>";
   if (alertify != null && alertify === "confirmar") {
     alertify.confirm("¿Está seguro de confirmar su cita?", function() {
@@ -434,10 +440,24 @@ function confirmarCita() {
       alertify.error("Su cita ha sido cancelada.");
       window.location.href = "gestioncitasclientes.jsp";
     });
-  }
+  } 
+} --%>
+//mostramos mensaje de alerta al confirmar
+function confirmarCita() {
+	 <%--  var alertify = "<%=request.getAttribute("alertify")%>"; --%>
+
+	alertify.confirm("¿Está seguro de confirmar su cita?", function() {
+		// Aquí puedes agregar el código para confirmar la cita
+		alertify.success("¡Su cita ha sido confirmada!");
+	     window.location.href = "gestioncitasclientes.jsp";
+	}, function() {
+		// Aquí puedes agregar el código para cancelar la cita
+		alertify.error("Su cita ha sido cancelada.");
+	     window.location.href = "gestioncitasclientes.jsp";
+	});
+
 }
-	
-	</script>
+</script>
 </body>
 
 </html>

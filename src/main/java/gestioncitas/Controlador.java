@@ -5,16 +5,10 @@ import java.sql.SQLException;
 import java.sql.Time;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.util.Iterator;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -25,8 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.tomcat.util.json.ParseException;
 
 import gestioncitas.Gestiones.Hora;
 
@@ -62,7 +54,7 @@ public class Controlador extends HttpServlet {
 	}
 
 
-	@SuppressWarnings({ "unused", "deprecation" })
+	@SuppressWarnings({ "unused" })
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 
@@ -144,44 +136,43 @@ public class Controlador extends HttpServlet {
 
 			}
 		}
-		//Recoger datos del calendiario (horas dias y servicio)
+		 // Agregar caso "agregarCita"
+	 
 		else if (todo.equals("areacliente")) 
 		{
 			System.out.println("area cliente");
-			//		    int dia = 0;
-			// Añadimos las horas
 			Gestiones gestion = new Gestiones();
 			gestion.horario();
 			gestion.calendario();
 			ArrayList<Hora> horasDia = new ArrayList<Hora>();
+			int idTrabajadorFK = 1;
 			int idServicio = Integer.parseInt(request.getParameter("idServicio"));//Sacamos idServicio
 			Calendar cal = Calendar.getInstance();
-			int mesActual = cal.get(Calendar.MONTH) + 1;
-			mesActual = Calendar.DAY_OF_MONTH;
+			int mesActual = cal.get(Calendar.MONTH) + 1;		
 			int diaSemana = cal.get(Calendar.DAY_OF_WEEK);
 			String diaParam = request.getParameter("data-dia");
 			int diaActual = 0;
-	
-
-//			String mesAnioActual = Year.now() +"-" + mesActual + "-" + diaActual; // Agregar el año actual
-//			Date fecha = Date.parse(mesAnioActual);
+			diaActual  = Calendar.DAY_OF_MONTH;
+			//			String mesAnioActual = Year.now() +"-" + mesActual + "-" + diaActual; // Agregar el año actual
+			//			Date fecha = Date.parse(mesAnioActual);
 			String horaParam = request.getParameter("horas");//Sacamos hora
+			if ( horaParam != null && !horaParam.isEmpty()) {
 			Time hora = Time.valueOf(horaParam + ":00");//transformamos hora
-			
+
 			// Extraer las partes de la hora
 			String[] partesHora = horaParam.split(":");
 			int horas, minutos, segundos;
 			// Verificar si el formato de la cadena es válido
-			if (horaParam != null && diaParam != null) {
-				
+			
+
 				if (partesHora.length == 3) {
-										
-					 horas = Integer.parseInt(partesHora[0]);
-					 minutos = Integer.parseInt(partesHora[1]);
-					 segundos = Integer.parseInt(partesHora[2]);
+
+					horas = Integer.parseInt(partesHora[0]);
+					minutos = Integer.parseInt(partesHora[1]);
+					segundos = Integer.parseInt(partesHora[2]);
 
 					// Crear el objeto Time con los valores extraídos
-					hora = new Time(horas, minutos, segundos);
+					//					hora = new Time(horas, minutos, segundos);
 
 					try {
 						diaActual = Integer.parseInt(diaParam);
@@ -189,96 +180,82 @@ public class Controlador extends HttpServlet {
 						Date fecha =  formatoFecha.parse(mesAnioActual);
 						fecha = new Date(fecha.getTime());
 						System.out.println("dia "+ mesAnioActual  + " hora " + hora + " servicio " + idServicio );
-						Citas nuevaCita = new Citas(idServicio, fecha, hora);
+						Citas nuevaCita = new Citas(hora,fecha, idCliente, idTrabajadorFK, idServicio);
 
 						if (elCalendario == null) {
 							elCalendario = new ArrayList<>();
+							elCalendario.add(nuevaCita);
+							// Enlazar el carrito con la sesión
+							session.setAttribute("elCalendario", elCalendario);
 						}
-
-						// Comprueba si la hora está ya en el calendario
-						// Si lo está, actualizamos la hora
-						// Si no está, la añadimos
-						boolean encontrado = false;
-
-						for (Citas cita : elCalendario) {
-							if (cita.getHoraCita().equals(nuevaCita.getHoraCita())) {
-								System.out.println("Fecha antes de añadir => " + cita.getHoraCita() + ", " + nuevaCita.getHoraCita());
-								nuevaCita.setFechaCita(nuevaCita.getFechaCita(), cita.getFechaCita());
-								encontrado = true;
-								break;
+						else
+						{
+							// Comprueba si la hora está ya en el calendario
+							// Si lo está, actualizamos la hora
+							// Si no está, la añadimos
+							boolean encontrado = false;
+							Iterator<Citas> iter = elCalendario.iterator();
+							while(!encontrado&&iter.hasNext())
+							{
+								Citas cita =
+										(Citas)iter.next();
+								if (cita.getHoraCita().equals(nuevaCita.getHoraCita())) {
+									System.out.println("Fecha antes de añadir => " + cita.getHoraCita() + ", " + nuevaCita.getHoraCita());
+									nuevaCita.setFechaCita(nuevaCita.getFechaCita(), cita.getFechaCita());
+									encontrado = true;
+									break;
+								}
+							}
+							if (!encontrado) {
+								// Añade la nueva hora al calendario
+								elCalendario.add(nuevaCita);
+								System.out.println("fecha despues de añadir => " + nuevaCita.getFechaCita());
 							}
 						}
-
-						if (!encontrado) {
-							// Añade la nueva hora al calendario
-							elCalendario.add(nuevaCita);
-							System.out.println("fecha despues de añadir => " + nuevaCita.getFechaCita());
-						}
-
-
+//						request.setAttribute("alertify","confirmar" );
+						nextPage = "/gestioncitasclientes.jsp";
+						
 					} catch(Exception e) {
 
 						request.setAttribute("alertify","cancelar" );
-
+						nextPage = "/gestioncitasclientes.jsp";
 						System.out.println("Error occurred"+ e.getMessage());
 					}
 				}
 			}
-
-			session.setAttribute("elCalendario", elCalendario);
-
-			// Volvemos a la página principal para añadir más citas
-			request.setAttribute("alerty","confirmar" );
-
+			request.setAttribute("alertify","confirmar" );
 			nextPage = "/gestioncitasclientes.jsp";
-
 		}
-
 		//Agregamos una cita nueva al confirmar
 		else if (todo.equals("confirmar")) {
-			System.out.println("Controlador Entra en confirmar cita");
-			int dia = 0;
-			int idTrabajadorFK = 1;
-			int idServicioFK = 0;
-			//		    String fecha = request.getParameter("dias");
-			Citas citas = new Citas();
-			Gestiones confirmar = new Gestiones();
-			idCliente  = (int)session.getAttribute("idCliente");
-			int idServicio = Integer.parseInt(request.getParameter("idServicio"));
-			idServicio = idServicioFK;
-			int idClienteFK = idCliente;
-			if (elCalendario != null) {
-				for (Citas item : elCalendario) {
-					try {
-						confirmar.agregarCita(item.getHoraCita(), item.getFechaCita(), item.getIdClienteFK(), item.getIdServicioFK(), idTrabajadorFK);
-						System.out.println("idcliente " + item.getIdClienteFK() + " idservicio " + item.getIdServicioFK() + " idTrabajadorFK " + idTrabajadorFK);
-						request.setAttribute("alertify", "confirmar");
-						nextPage = "/gestioncitasclientes.jsp";
-						System.out.println("se acepta cita");
-					} catch (SQLException e2) {
-						e2.printStackTrace();
-					} 
-					nextPage = "/gestioncitasclientes.jsp";
-					System.out.println("se acepta cita");
-				}
-			} 
-//			else {
-//				// Manejar el caso cuando elCalendario es nulo
-//				if(elCalendario == null)
-//				{
-//					//		    		request.setAttribute("alertify", "cancelar");
-//					//		    		 nextPage = "/gestioncitasclientes.jsp";
-//					System.out.println("se cancela cita");
-//				}
-			}
-		
-
-		//para salir de la app
-		//		else if (todo.equals("logout"))
-		//		{
-		//			nextPage = "/logout.jsp";
-		//		}
-
+		    System.out.println("Controlador Entra en confirmar cita");
+		    int dia = 0;
+		    int idTrabajadorFK = 1;
+		    int idServicioFK = 0;
+		    Citas citas = new Citas();
+		    Gestiones confirmar = new Gestiones();
+		    confirmar.pool.Conectar();
+		    idCliente = (int) session.getAttribute("idCliente");
+		    int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+		    idServicio = idServicioFK;
+		    int idClienteFK = idCliente;
+		    if (elCalendario != null) {
+		        for (Citas item : elCalendario) {
+		            try {
+		                confirmar.agregarCita(item.getHoraCita(), item.getFechaCita(), item.getIdClienteFK(), item.getIdServicioFK(), idTrabajadorFK);
+		                System.out.println("idcliente " + item.getIdClienteFK() + " idservicio " + item.getIdServicioFK() + " idTrabajadorFK " + idTrabajadorFK);
+		                request.setAttribute("alertify", "confirmar");
+		                System.out.println("se acepta cita");
+		            } catch (SQLException e2) {
+		            	 request.setAttribute("alertify", "cancelar");
+			                System.out.println("se cancela cita");
+		                e2.printStackTrace();
+		            }
+		        }
+		    }
+		    request.setAttribute("alertify","confirmar" );
+		    nextPage = "/gestioncitasclientes.jsp";
+		}
 		ServletContext servletContext = request.getServletContext();
 		RequestDispatcher requestDispatcher =
 				servletContext.getRequestDispatcher(nextPage);

@@ -2,6 +2,7 @@ package gestioncitas;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -186,27 +187,48 @@ public class Gestiones
 		
 	}
 	//Agregar cita nueva 
-	public void agregarCita(Time horaCita, java.util.Date fechaCita, int idClienteFK, int idServicioFK, int idTrabajadorFK ) throws SQLException
-	{
-		System.out.println("Gestiones Entra en confirmar cita");
-		try
-		{
-			pool.Conectar();
-
-			//INSERT INTO `gestioncitas`.`citas` (`horaCita`, `fechaCita`, `idClienteFK`, `idTrabajadorFK`, `idServicioFK`) VALUES ('10', '2023/05/01', '1', '1', '1');
-			String cita = "INSERT INTO gestioncitas.citas (horaCita, fechaCita, idClienteFK, idTrabajadorFK, idServicioFK) VALUES ('"+ horaCita +"', '"+fechaCita+"', '"+idClienteFK+"', '"+idTrabajadorFK+"', '"+idServicioFK+"');";
-			pool.statement.execute(cita);
-			System.out.println("agregar una cita => " + cita);
-		}
-		catch (ServletException e)
-		{
-
-			e.printStackTrace();
-		}
-
-		pool.cerrarConexion();
-	
+	public void agregarCita(Time horaCita, Date fechaCita, int idClienteFK, int idServicioFK, int idTrabajadorFK) throws SQLException {
+	    try {
+	        pool.Conectar();
+	        
+	        String cita = "INSERT INTO gestioncitas.citas (horaCita, fechaCita, idClienteFK, idTrabajadorFK, idServicioFK) VALUES (?, ?, ?, ?, ?)";
+	        PreparedStatement statement = pool.conn.prepareStatement(cita);
+	        statement.setTime(1, horaCita);
+	        statement.setDate(2, fechaCita);
+	        statement.setInt(3, idClienteFK);
+	        statement.setInt(4, idTrabajadorFK);
+	        statement.setInt(5, idServicioFK);
+	        statement.executeUpdate();
+	   
+	        System.out.println("Gestiones agregar una cita => " + cita);
+	    } catch (ServletException e) {
+	        e.printStackTrace();
+	    } finally {
+	        pool.cerrarConexion();
+	    }
 	}
+
+//	public void agregarCita(Time horaCita, java.util.Date fechaCita, int idClienteFK, int idServicioFK, int idTrabajadorFK ) throws SQLException
+//	{
+//		System.out.println("Gestiones Entra en confirmar cita");
+//		try
+//		{
+//			pool.Conectar();
+//
+//			//INSERT INTO `gestioncitas`.`citas` (`horaCita`, `fechaCita`, `idClienteFK`, `idTrabajadorFK`, `idServicioFK`) VALUES ('10', '2023/05/01', '1', '1', '1');
+//			String cita = "INSERT INTO gestioncitas.citas (horaCita, fechaCita, idClienteFK, idTrabajadorFK, idServicioFK) VALUES ('"+ horaCita +"', '"+fechaCita+"', '"+idClienteFK+"', '"+idTrabajadorFK+"', '"+idServicioFK+"');";
+//			pool.statement.execute(cita);
+//			System.out.println("agregar una cita => " + cita);
+//		}
+//		catch (ServletException e)
+//		{
+//
+//			e.printStackTrace();
+//		}
+//
+//		pool.cerrarConexion();
+//	
+//	}
 
 	//Mostrar informacion de citas al trabajador 
 	public ArrayList<Citas> getCitas() throws ServletException, SQLException {
