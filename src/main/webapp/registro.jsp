@@ -22,6 +22,10 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
 </head>
 <style>
+a {
+	text-decoration: none; /* Elimina la subrayado del enlace */
+}
+
 @import
 	url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css")
 	;
@@ -72,7 +76,6 @@
 									<!--  <form class="mx-1 mx-md-4"> -->
 									<form class="mx-1 mx-md-4" name="registro" action="controlador"
 										method="POST">
-										<input type="hidden" name="todo" value="registro">
 										<%
 										Gestiones gestioncitas = new Gestiones();
 										%>
@@ -130,28 +133,29 @@
 													class="form-control" placeholder="Repite la contraseña" />
 											</div>
 										</div>
-								
+
 
 										<div class="form-check d-flex justify-content-center mb-5">
-											<input class="form-check-input me-2" type="checkbox" value="terminos"
-												name="terminos" id="terminos" required/> <label class="form-check-label"
-												for="form2Example3"> Acepto todos los términos <a
-												href="https://boe.es/buscar/act.php?id=BOE-A-2018-16673">Términos del servicio</a>
+											<input class="form-check-input me-2" type="checkbox"
+												value="terminos" name="terminos" id="terminos" /> <label
+												class="form-check-label" for="form2Example3"> Acepto
+												todos los términos <a
+												href="https://boe.es/buscar/act.php?id=BOE-A-2018-16673">Términos
+													del servicio</a>
 											</label>
 										</div>
 										<div>
-											<div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-												<form name="registro" action="controlador" method="POST">
-													<button type="submit" name="todo" value="registro"
-														class="btn btn-primary btn-lg gradient-custom-2 d-flex ">Registrarte</button>
 
-													<!-- 	 -->
-													<a  type="button" href="./login.jsp"
-														class="btn btn-danger text-center" >Volver</a>
-												</form>
+											<div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+												<!-- <form name="registro" action="controlador" method="POST">  -->
+
+												<button type="submit" name="todo" value="registro"
+													class="btn btn-primary btn-lg gradient-custom-2 d-flex ">Registrarte</button>
+												<input type="submit" class="btn btn-danger btn-lg margin"
+													name="todo" value="volver">
 											</div>
-											<div class="text-center"></div>
 										</div>
+
 									</form>
 
 								</div>
@@ -162,19 +166,15 @@
 									<img
 										src="https://i.pinimg.com/originals/58/c2/53/58c253f9dbde6c2ed7f74eedc4ddc7a2.jpg"
 										class="img-fluid" alt="Sample image">
-
 								</div>
-
 							</div>
-
 						</div>
 					</div>
-
-					<!-- 	<a type="button" class="btn btn-danger btn-lg margin"
-						href="login.jsp">Volver</a> -->
 				</div>
 			</div>
+
 		</div>
+
 	</section>
 
 </body>
