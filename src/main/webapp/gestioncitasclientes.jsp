@@ -213,20 +213,17 @@ if (usuario == null) {
 		</div>
 	</div>
 	<hr>
-	<form name="confirmar" action="controlador" method="POST">
-		<input type="hidden" name="todo" value="areacliente">
-		<section>
-			<div class="justify-content-center text-center pt-4">
-				<h3>Reserva una cita</h3>
-
-				<!-- 	<form name="AgregarForm" action="controlador" method="POST"> -->
-				<div class="text-center form-floating">
-					<label class="color:#000;" for="floatingSelect">Seleccione
-						un tratamiento/servicio:</label><br> <select class="form-select"
-						name="idServicio" id="idServicio"
-						aria-label="Floating label select example">
-						<!-- código java  -->
-						<%
+	<form name="formulario" action="controlador" method="POST">
+	
+		<div class="justify-content-center text-center pt-4">
+			<h3>Reserva una cita</h3>
+			<div class="text-center form-floating">
+				<label class="color:#000;" for="idServicio">Seleccione un
+					tratamiento/servicio:</label><br> <select class="form-select"
+					name="idServicio" id="idServicio"
+					aria-label="Floating label select example">
+					<!-- código java  -->
+					<%
 						ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
 						Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
 						ArrayList<Servicios> listaservicios = new ArrayList<Servicios>();
@@ -237,18 +234,18 @@ if (usuario == null) {
 						for (int i = 0; i < servicio.tamano(); i++) {
 						%>
 
-						<option class="text-center" value="<%=servicio.getIdServicio(i)%>">
-							<!-- Mostramos solo los de interés, precio y nombre del servicio -->
-							<%=servicio.getTipoServicio(i) + " " + servicio.getPrecioServicio(i) + "0 € "%>
-							<%
+					<option class="text-center" value="<%=servicio.getIdServicio(i)%>">
+						<!-- Mostramos solo los de interés, precio y nombre del servicio -->
+						<%=servicio.getTipoServicio(i) + " " + servicio.getPrecioServicio(i) + "0 € "%>
+						<%
 							}
 							%>
-						</option>
-					</select>
-				</div>
+					</option>
+				</select>
 			</div>
-			<br> <br>
-		</section>
+		</div>
+		<br> <br>
+		<!-- 	</section> -->
 		<!-- Mostramos calendario y fecha -->
 		<!-- <input type="hidden" name="todo" value="dias"> -->
 		<div class="my-5 justify-content-center text-center">
@@ -273,6 +270,7 @@ if (usuario == null) {
 						Calendar cal = Calendar.getInstance();
 						int numDias = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 						int mesActual = cal.get(Calendar.MONTH) + 1;
+						int mesNext = cal.get(Calendar.MONTH);
 						%>
 						<div class="btn-group">
 							<button type="button" class="btn btn-default">
@@ -285,6 +283,7 @@ if (usuario == null) {
 								<i class="glyphicon glyphicon-chevron-right"></i>
 							</button>
 						</div>
+
 						<%--  <%} %> --%>
 					</div>
 					<br>
@@ -319,15 +318,8 @@ if (usuario == null) {
 									//obtener horas
 								%>
 								<!-- Indicamos en el class si que sabado y domingo no esta disponible -->
-
-								<td
-									class="<%=diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available"%>"
-									data-dia="<%=i%>"><%=i%></td>
-
-								<%-- 
-								<td
-									class="<%=diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available"%>"
-									name="fecha" id="dia"><%=i%></td> --%>
+								<td data-dia="<%=i%>" class="<%=diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available"%>">
+								<input data-dia="<%=i%>" type="hidden" name="data-dia" value="<%=i%>"><%=i%></td>
 								<%
 								if (i % 7 == 0) {
 								%>
@@ -341,11 +333,12 @@ if (usuario == null) {
 							</tr>
 
 						</tbody>
-					</table>
-
-					<label>Seleccionar hora</label>
+					</table>					
+					
+					
+					<label for="horas-disponibles">Seleccionar hora</label>
 					<!-- 	<input type="hidden" name="todo" value="areacliente"> -->
-					<select name="horas" id="horas-disponibles">
+					<select name="horas-disponibles" id="horas-disponibles">
 
 						<%
 						/* horasDia.horarioDisponible(dia);
@@ -382,31 +375,20 @@ if (usuario == null) {
 							<tr>
 								<td id="dias-disponibles"></td>
 							</tr>
-							<%
-							if (horasDisponibles != null && horasDisponibles.size() > 0) {
-							%>
-							<tr>
-								<td id="horas-disponibles"></td>
-							</tr>
-							<%
-							}
-							%>
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
+		<div class="text-center">
+
+			<button name="todo" value="confirmar" class="btn btn-success boton"
+				onclick="confirmarCita()">Confirmar</button>
+
+			<br> <br>
+		</div>
 	</form>
-	<div class="text-center">
-		<!-- 		<input  type="hidden" name="todo" onclick="confirmarCita()" value="agregarCita">
- -->
- 		<input class="btn btn-success boton" type="submit" name="confirmar" onclick="confirmarCita()" value="Confirmar">
-		<button name="todo" value="confirmar" class="btn btn-success boton"
-			onclick="confirmarCita()">Confirmar</button>
-
-		<br> <br>
-	</div>
-
+	<!-- </form> -->
 	<!-- Cambio de colores  -->
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
@@ -429,34 +411,20 @@ if (usuario == null) {
 			$('#horas-disponibles').html(horas);
 		});
 	
-		//mostramos mensaje de alerta al confirmar
-<%--  function confirmarCita() {
-  var alertify = "<%=request.getAttribute("alertify") %>";
-  if (alertify != null && alertify === "confirmar") {
-    alertify.confirm("¿Está seguro de confirmar su cita?", function() {
-      alertify.success("¡Su cita ha sido confirmada!");
-      window.location.href = "gestioncitasclientes.jsp";
-    }, function() {
-      alertify.error("Su cita ha sido cancelada.");
-      window.location.href = "gestioncitasclientes.jsp";
-    });
-  } 
-} --%>
+
 //mostramos mensaje de alerta al confirmar
+
 function confirmarCita() {
-	 <%--  var alertify = "<%=request.getAttribute("alertify")%>"; --%>
-
 	alertify.confirm("¿Está seguro de confirmar su cita?", function() {
-		// Aquí puedes agregar el código para confirmar la cita
+		// Mensaje de confirmación
 		alertify.success("¡Su cita ha sido confirmada!");
-	     window.location.href = "gestioncitasclientes.jsp";
+		window.location.href = "gestioncitasclientes.jsp";
 	}, function() {
-		// Aquí puedes agregar el código para cancelar la cita
+		//Mensaje para cancelar la cita
 		alertify.error("Su cita ha sido cancelada.");
-	     window.location.href = "gestioncitasclientes.jsp";
+		window.location.href = "gestioncitasclientes.jsp";
 	});
-
-}
+} 
 </script>
 </body>
 
