@@ -98,7 +98,7 @@
 									<div
 										class="d-flex align-items-center justify-content-center pb-4">
 										<p class="mb-0 me-2">¿No tienes cuenta?</p>
-										<form name="login" action="controlador" method="POST">
+										<!-- <form name="login" action="controlador" method="POST"> -->
 											<a type="button" class="btn btn-outline-danger"
 												href="registro.jsp">Crea una nueva</a>
 
@@ -106,7 +106,7 @@
 
 									</div>
 
-								</form>
+								<!-- </form> -->
 
 							</div>
 						</div>

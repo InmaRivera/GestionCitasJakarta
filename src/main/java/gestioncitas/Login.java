@@ -97,14 +97,13 @@ public class Login extends HttpServlet {
 				{
 
 					//Recuperamos el tipo de usuario de la base de datos
-					tipoUsuario = rset.getInt("idUsuario");
-					//					
+					tipoUsuario = rset.getInt("idUsuario");				
 					// Sacar el tipo del usuario logado
 					String sql = ("SELECT idUsuario = '"+ tipoUsuario +"' FROM usuarios WHERE " 
 							+ "nombreUsuario = '"
 							+ usuario 
 							+ "' AND claveUsuario = SHA2('" + password +  "', 256);");
-					System.out.println(sql);
+			
 					//buscamos idCliente
 					tipoUsuario = rset.getInt("idUsuario");
 					String clienteQuery = "SELECT idCliente FROM clientes WHERE idUsuarioFK = " + tipoUsuario;
@@ -112,7 +111,7 @@ public class Login extends HttpServlet {
 					if (clienteResult.next()) 
 					{
 						idCliente = clienteResult.getInt("idCliente");
-						System.out.println("idcliente login "+idCliente);
+						
 						nextPage = "/gestioncitasclientes.jsp";
 						//comprobamos mayor que 1 es cliente
 						if(tipoUsuario>1)

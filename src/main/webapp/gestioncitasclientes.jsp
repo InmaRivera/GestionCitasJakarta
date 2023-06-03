@@ -65,6 +65,16 @@ h5 {
 	font-weight: 80;
 }
 
+span {
+	font-family: 'Pacifico', cursive;
+	font-family: 'Shantell Sans', cursive;
+	color: #fff;
+	text-shadow: #5ef0f2 3px 6px 4px;
+	text-align: center;
+	font-size: 90%;
+	font-weight: 80;
+}
+
 h1, h3, h4, p {
 	font-family: 'Pacifico', cursive;
 	font-family: 'Shantell Sans', cursive;
@@ -75,54 +85,23 @@ h1, h3, h4, p {
 
 .calendar {
 	border: 1px solid #ddd;
+	background-color: #DBF7FD;
 	padding: 0px;
 	padding-left: 76px;
 	padding-right: 60px;
-}
-
-.calendar th {
-	background-color: #f2f2f2;
-	text-align: center;
-	font-weight: bold;
-	padding: 10px;
-	font-size: 18px;
-}
-
-.calendar td {
-	padding: 10px;
-	text-align: center;
-	font-size: 16px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-
-.calendar td:hover {
-	background-color: #f2f2f2;
-}
-
-.calendar .available {
-	background-color: #d4edda;
-	color: #155724;
-}
-
-.calendar .unavailable {
-	background-color: #f8d7da;
-	color: #721c24;
-}
-
-.calendar .selected {
-	background-color: #007bff;
-	color: #fff;
-}
-
-section {
-	background-color: #DBF7FD;
 }
 
 .d-flex {
 	display: -ms-flexbox !important;
 	display: flex !important;
 	flex-direction: column;
+}
+
+.hour {
+	border: 1px solid #ddd;
+	padding: 0px;
+	padding-left: 76px;
+	padding-right: 60px;
 }
 
 .boton {
@@ -142,8 +121,8 @@ if (usuario == null) {
 <body>
 	<nav class="navbar navbar-expand-lg bg-dark fixed-top">
 		<div class="container-fluid ">
-			<a class="navbar-brand" href="gestioncitasclientes.jsp"><h5>Área
-					Cliente</h5></a>
+			<a class="navbar-brand h5" href="gestioncitasclientes.jsp"><span>Área
+					Cliente</span></a>
 			<div class=" d-flex justify-content-end" id="navbarNav">
 				<ul class="navbar-nav">
 					<li class="nav-item "><a class="nav-link letra"
@@ -167,6 +146,13 @@ if (usuario == null) {
 	}
 	%>
 	<div class="justify-content-center text-center">
+		<%
+		String message = (String) request.getAttribute("cita");
+		if (message != null) {
+			out.println(message);
+			request.removeAttribute("cita");
+		}
+		%>
 		<!-- <input type="hidden" name="todo" value="areacliente"> -->
 		<div class="alert alert-info" role="alert">
 			<table class="table table-hover">
@@ -209,12 +195,13 @@ if (usuario == null) {
 					<!-- Mostramos mensaje -->
 					<td><%=mensaje%></td>
 				</tr>
+
 			</table>
 		</div>
 	</div>
 	<hr>
 	<form name="formulario" action="controlador" method="POST">
-	
+		<input type="hidden" name="todo" value="formulario">
 		<div class="justify-content-center text-center pt-4">
 			<h3>Reserva una cita</h3>
 			<div class="text-center form-floating">
@@ -224,27 +211,27 @@ if (usuario == null) {
 					aria-label="Floating label select example">
 					<!-- código java  -->
 					<%
-						ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
-						Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
-						ArrayList<Servicios> listaservicios = new ArrayList<Servicios>();
-						//servicio.servicios(); //Llamamos al método para sacar la información de servicios de la base de datos
-						Servicios infoServicio = new Servicios();//Creamos objeto de la clase servicios
-						servicio.getServicios();
-						//Creamos bucle para mostrar todos los servicios disponibles
-						for (int i = 0; i < servicio.tamano(); i++) {
-						%>
+					ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
+					Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
+					ArrayList<Servicios> listaservicios = new ArrayList<Servicios>();
+					//servicio.servicios(); //Llamamos al método para sacar la información de servicios de la base de datos
+					Servicios infoServicio = new Servicios();//Creamos objeto de la clase servicios
+					servicio.getServicios();
+					//Creamos bucle para mostrar todos los servicios disponibles
+					for (int i = 0; i < servicio.tamano(); i++) {
+					%>
 
 					<option class="text-center" value="<%=servicio.getIdServicio(i)%>">
 						<!-- Mostramos solo los de interés, precio y nombre del servicio -->
 						<%=servicio.getTipoServicio(i) + " " + servicio.getPrecioServicio(i) + "0 € "%>
 						<%
-							}
-							%>
+						}
+						%>
 					</option>
 				</select>
 			</div>
 		</div>
-		<br> <br>
+		<br>
 		<!-- 	</section> -->
 		<!-- Mostramos calendario y fecha -->
 		<!-- <input type="hidden" name="todo" value="dias"> -->
@@ -259,10 +246,10 @@ if (usuario == null) {
 						Date fechaActual = new Date();
 						%>
 						<h4>Calendario 2023</h4>
-						<p>Seleccione un día disponible:</p>
-						<h4>
-							Hoy:
-							<%=fechaActual%></h4>
+						<!-- <p>Días disponible:</p> -->
+						<b><h4>
+								Hoy:<br>
+								<%=fechaActual%></h4></b>
 						<%
 						// Obtener el número de días del mes actual
 						Gestiones mes = new Gestiones();
@@ -270,8 +257,9 @@ if (usuario == null) {
 						Calendar cal = Calendar.getInstance();
 						int numDias = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 						int mesActual = cal.get(Calendar.MONTH) + 1;
-						int mesNext = cal.get(Calendar.MONTH);
 						%>
+
+
 						<div class="btn-group">
 							<button type="button" class="btn btn-default">
 								<i class="glyphicon glyphicon-chevron-left"></i>
@@ -283,107 +271,49 @@ if (usuario == null) {
 								<i class="glyphicon glyphicon-chevron-right"></i>
 							</button>
 						</div>
-
-						<%--  <%} %> --%>
 					</div>
-					<br>
-					<table class="table">
-						<thead>
-							<tr>
-								<th>Lun</th>
-								<th>Mar</th>
-								<th>Mie</th>
-								<th>Jue</th>
-								<th>Vie</th>
-								<th>Sab</th>
-								<th>Dom</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<%
-								int dia = 0;
-								Gestiones horasDia = new Gestiones();
-								/* horasDia.calendario(); */
-								/* 	horasDia.horario();*/
-								horasDia.horarioDisponible(dia);
-								/* ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario"); */
-
-								for (int i = 1; i <= numDias; i++) {
-									// Obtener el día de la semana para el día actual
-									cal.set(Calendar.DAY_OF_MONTH, i);
-									mesActual = Calendar.DAY_OF_MONTH;
-									int diaSemana = cal.get(Calendar.DAY_OF_WEEK);
-									mesActual = Calendar.DAY_OF_WEEK;
-									//obtener horas
-								%>
-								<!-- Indicamos en el class si que sabado y domingo no esta disponible -->
-								<td data-dia="<%=i%>" class="<%=diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available"%>">
-								<input data-dia="<%=i%>" type="hidden" name="data-dia" value="<%=i%>"><%=i%></td>
-								<%
-								if (i % 7 == 0) {
-								%>
-							</tr>
-							<tr>
-								<%
-								}
-								}
-								%>
-
-							</tr>
-
-						</tbody>
-					</table>					
-					
-					
-					<label for="horas-disponibles">Seleccionar hora</label>
-					<!-- 	<input type="hidden" name="todo" value="areacliente"> -->
-					<select name="horas-disponibles" id="horas-disponibles">
+					<div>
 
 						<%
-						/* horasDia.horarioDisponible(dia);
-						for (int i = 0; i < gestiones.tamano(); i++) {
-						    Citas cita = horasDisponibles.get(i);
-						    gestiones.getHoraCita(i); */
+						message = (String) request.getAttribute("error");
+						if (message != null) {
+
+							out.println(message);
+
+						}
+						%>
+						<br> <label for="date">Seleccione el día:</label> <br> <input
+							type="date" class="calendario " name="data-dia" value="data-dia"
+							required />
+					</div>
+					<br> <label> Seleccionar una hora:</label> <br> <select
+						class="hour" name="data-horas" id="data-horas">
+						<%
+						int dia = 0;
+						Gestiones horasDia = new Gestiones();
+						horasDia.horario();
+						horasDia.horarioDisponible(dia);
 						ArrayList<LocalTime> horaDisponible = horasDia.horarioDisponible(dia);
 						for (int i = 0; i < horaDisponible.size(); i++) {
 							LocalTime hora = horaDisponible.get(i);
-							/* 	String horas = horasDia.getHoraCita(i).toString();
-								String[] partesHoras = horas.split("-"); */
+							String horaString = String.format("%02d:%02d", hora.getHour(), hora.getMinute()); // Formatear manualmente la hora como "hh:mm"
 						%>
-						<option
-							data-horas="<%=hora.getHour() + ":0" + hora.getMinute() + ":0" + hora.getSecond()%>">
-							<%
-							if (hora.getMinute() < 10) {
-								out.println(hora.getHour() + ":0" + hora.getMinute());
-							%>
+						<option value="<%=horaString%>">
+							<%=horaString%>
 						</option>
 						<%
-						} else {
-						out.println(hora.getHour() + ":" + hora.getMinute());
-						}
 						}
 						%>
 					</select>
-					<table class="table">
-						<thead>
-							<tr>
-								<th>Horas y día seleccionado:</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td id="dias-disponibles"></td>
-							</tr>
-						</tbody>
-					</table>
 				</div>
 			</div>
+			<br>
+			<br>
 		</div>
 		<div class="text-center">
 
-			<button name="todo" value="confirmar" class="btn btn-success boton"
-				onclick="confirmarCita()">Confirmar</button>
+			<button name="formulario" onclick="confirmarCita()" value="confirmar"
+				class="btn btn-success boton">Confirmar</button>
 
 			<br> <br>
 		</div>
@@ -398,34 +328,29 @@ if (usuario == null) {
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
 	<script>
-		// Seleccionar un día disponible
-		$('.calendar td.available').on('click', function() {
-			$('.calendar td.selected').removeClass('selected');
-			$(this).addClass('selected');
-			 // Obtener el día seleccionado
-			  let diaSeleccionado = $(this).data('dia');
-			  $('#dias-disponibles').html(diaSeleccionado);
-			  // Obtener las horas disponibles para el día seleccionado
-			// Aquí se hace la llamada para obtener los horarios disponibles para ese día
-			let horas = $(this).data('horas');
-			$('#horas-disponibles').html(horas);
-		});
-	
+		//mostramos mensaje de alerta al confirmar
+		function confirmarCita() {
+			let fecha = document.getElementById("data-dia");
+			alertify.confirm("Debe seleccionar un día", function() {
+				// Mensaje de confirmación
+				/* alertify.success("¡Su cita ha sido confirmada!"); */
+				/* window.location.href = "gestioncitasclientes.jsp"; */
 
-//mostramos mensaje de alerta al confirmar
+				if (fecha !== "data-dia") {
+					// Si la fecha no es válida, muestra el mensaje de error y cancela la cita
+					alertify.error("Debe seleccionar un día");
+				} else if (fecha !== "data-dia")
+					window.load = function() {
+						{
 
-function confirmarCita() {
-	alertify.confirm("¿Está seguro de confirmar su cita?", function() {
-		// Mensaje de confirmación
-		alertify.success("¡Su cita ha sido confirmada!");
-		window.location.href = "gestioncitasclientes.jsp";
-	}, function() {
-		//Mensaje para cancelar la cita
-		alertify.error("Su cita ha sido cancelada.");
-		window.location.href = "gestioncitasclientes.jsp";
-	});
-} 
-</script>
+							alertify.confirm("¡Su cita ha sido confirmada!");
+
+						}
+						;
+					}
+			});
+		}
+	</script>
 </body>
 
 </html>
