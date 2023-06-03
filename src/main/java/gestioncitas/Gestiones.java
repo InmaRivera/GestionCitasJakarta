@@ -56,7 +56,7 @@ public class Gestiones
 
 		pool.cerrarConexion();
 		return listaUsuarios;
-		
+
 	}
 
 	//Alta cliente
@@ -126,12 +126,12 @@ public class Gestiones
 		}
 
 		pool.cerrarConexion();
-	
+
 	}
 	//horas disponibles
 	public ArrayList<Hora> horario() {
 		ArrayList<Hora> horas = new ArrayList<>();
-	    // Aquí añades las horas disponibles a la lista
+		// Aquí añades las horas disponibles a la lista
 		horas.add(new Hora(10, 0));
 		horas.add(new Hora(11, 0));
 		horas.add(new Hora(12, 0));
@@ -142,9 +142,9 @@ public class Gestiones
 		horas.add(new Hora(18, 0));
 		horas.add(new Hora(19, 0));
 		horas.add(new Hora(20, 0));
-	    return horas;
-	
-	
+		return horas;
+
+
 	}
 	public ArrayList<LocalTime> horarioDisponible(int dia)
 	{
@@ -156,7 +156,7 @@ public class Gestiones
 			// Obtener el horario actual
 			//			Time horasTime = new Time(0);
 			//lista de horas
-		
+
 			// Agregar horas desde las 10:00 a las 14:00
 			LocalTime hora = LocalTime.of(10, 0);
 			while (hora.isBefore(LocalTime.of(15, 0))) {
@@ -172,9 +172,6 @@ public class Gestiones
 			}
 			//agregamos a la lista
 			horasDisponibles.add(hora);
-			// Imprimir horas disponibles
-//			horasDisponibles.forEach(System.out::println);
-//			System.out.println(horasDisponibles + " desde gestiones");
 		}
 		catch (ServletException e)
 		{
@@ -183,22 +180,19 @@ public class Gestiones
 
 		pool.cerrarConexion();
 		return horasDisponibles;
-	
-		
+
+
 	}
 	//Agregar cita nueva 
 
 	public void agregarCita(LocalTime horaCita, LocalDate fechaCita, int idClienteFK, int idServicioFK, int idTrabajadorFK ) throws SQLException
 	{
-		System.out.println("Gestiones Entra en confirmar cita");
 		try
 		{
 			pool.Conectar();
-
 			//INSERT INTO `gestioncitas`.`citas` (`horaCita`, `fechaCita`, `idClienteFK`, `idTrabajadorFK`, `idServicioFK`) VALUES ('10', '2023/05/01', '1', '1', '1');
 			String cita = "INSERT INTO gestioncitas.citas (horaCita, fechaCita, idClienteFK, idTrabajadorFK, idServicioFK) VALUES ('"+ horaCita +"', '"+fechaCita+"', '"+idClienteFK+"', '"+idTrabajadorFK+"', '"+idServicioFK+"');";
 			pool.statement.execute(cita);
-			System.out.println("agregar una cita => " + cita);
 		}
 		catch (ServletException e)
 		{
@@ -207,7 +201,7 @@ public class Gestiones
 		}
 
 		pool.cerrarConexion();
-	
+
 	}
 
 	//Mostrar informacion de citas al trabajador 
@@ -221,17 +215,17 @@ public class Gestiones
 			String infoCitas = "select *  from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente;";
 			ResultSet rs = pool.statement.executeQuery(infoCitas);
 			Citas infoCita;
-			
+
 			try
 			{
 				while(rs.next())
 				{
-				    // obtener el nombre y apellidos del usuario
-			        String nombreUsuario = rs.getString("nombreUsuario");
-			        String apellidosUsuario = rs.getString("apellidosUsuario");
-			        String telefonoUsuario = rs.getString("telefonoUsuario");
-			        Usuarios usuario1 = new Usuarios(nombreUsuario, apellidosUsuario,telefonoUsuario);
-			        infoCita = new Citas(rs.getInt("idCita"),rs.getTime("horaCita"), rs.getDate("fechaCita"), rs.getInt("idClienteFK"),rs.getInt("idTrabajadorFK"), rs.getInt("idServicioFK"),nombreUsuario,apellidosUsuario, telefonoUsuario);
+					// obtener el nombre y apellidos del usuario
+					String nombreUsuario = rs.getString("nombreUsuario");
+					String apellidosUsuario = rs.getString("apellidosUsuario");
+					String telefonoUsuario = rs.getString("telefonoUsuario");
+					Usuarios usuario1 = new Usuarios(nombreUsuario, apellidosUsuario,telefonoUsuario);
+					infoCita = new Citas(rs.getInt("idCita"),rs.getTime("horaCita"), rs.getDate("fechaCita"), rs.getInt("idClienteFK"),rs.getInt("idTrabajadorFK"), rs.getInt("idServicioFK"),nombreUsuario,apellidosUsuario, telefonoUsuario);
 					listadoCitas.add(infoCita);
 				}
 			} catch (SQLException e)
@@ -247,35 +241,31 @@ public class Gestiones
 		pool.cerrarConexion();
 		return listadoCitas;
 	}
-	
+
 	//Mostrar informacion de citas al cliente
 	public ArrayList<Citas> getInfoCitas(int idCliente) throws ServletException, SQLException {
 		ArrayList<Citas> listaCitas = new ArrayList<Citas>();
 		//Usamos idCliente de session
-	
+
 		try
 		{
 			pool.Conectar();
-			String citas = "select * from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente = "+idCliente+";";
-;
+			String citas = "select * from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente = "+idCliente+";";			
 			ResultSet rs = pool.statement.executeQuery(citas);
 			Citas cita;
-			
 			try
 			{
 				while(rs.next())
 				{
-				    // obtener el nombre y apellidos del usuario
-			        String nombreUsuario = rs.getString("nombreUsuario");
-			        String apellidosUsuario = rs.getString("apellidosUsuario");
-			        String telefonoUsuario = rs.getString("telefonoUsuario");
-			        Usuarios usuario = new Usuarios(nombreUsuario, apellidosUsuario,telefonoUsuario);
+					// obtener el nombre y apellidos del usuario
+					String nombreUsuario = rs.getString("nombreUsuario");
+					String apellidosUsuario = rs.getString("apellidosUsuario");
+					String telefonoUsuario = rs.getString("telefonoUsuario");
+					Usuarios usuario = new Usuarios(nombreUsuario, apellidosUsuario,telefonoUsuario);
 					cita = new Citas(rs.getInt("idCita"),rs.getTime("horaCita"), rs.getDate("fechaCita"), rs.getInt("idClienteFK"),rs.getInt("idTrabajadorFK"), rs.getInt("idServicioFK"),nombreUsuario,apellidosUsuario, telefonoUsuario);
-				   
 					listaCitas.add(cita);
-					System.out.println("cita desde gestiones => " + cita);
 				}
-				
+
 			} catch (SQLException e)
 			{		
 				e.printStackTrace();
@@ -287,9 +277,9 @@ public class Gestiones
 		}
 
 		pool.cerrarConexion();
-		
+
 		return listaCitas;	              
-	
+
 	}
 
 	//Devolver la información de servicios
@@ -331,21 +321,21 @@ public class Gestiones
 	}
 	//metodo horas
 	public class Hora {
-	    private int hora;
-	    private int minutos;
-	    
-	    public Hora(int hora, int minutos) {
-	        this.hora = hora;
-	        this.minutos = minutos;
-	    }
-	    
-	    public int getHora() {
-	        return hora;
-	    }
-	    
-	    public int getMinutos() {
-	        return minutos;
-	    }
+		private int hora;
+		private int minutos;
+
+		public Hora(int hora, int minutos) {
+			this.hora = hora;
+			this.minutos = minutos;
+		}
+
+		public int getHora() {
+			return hora;
+		}
+
+		public int getMinutos() {
+			return minutos;
+		}
 	}
 
 }

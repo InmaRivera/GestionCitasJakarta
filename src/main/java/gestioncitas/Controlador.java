@@ -135,12 +135,9 @@ public class Controlador extends HttpServlet {
 		// Agregar caso "agregarCita"
 		else if (todo.equals("formulario"))
 		{
-
-			System.out.println("entra areacliente");
 			Gestiones nuevaCita = new Gestiones();//objeto gestiones para llamar a agregar cita
 			// Obtener los valores seleccionados del formulario
-			idCliente = (int)session.getAttribute("idCliente");
-			System.out.println("idCliente "+idCliente);
+			idCliente = (int)session.getAttribute("idCliente");			
 			int idTrabajadorFK = 1;
 			int idServicio = Integer.parseInt(request.getParameter("idServicio"));//obtenemos id servicio seleccionado
 			String dia = request.getParameter("data-dia");//recogemos día seleccionado
@@ -149,11 +146,8 @@ public class Controlador extends HttpServlet {
 			LocalTime horaCita;
 			horaCita = LocalTime.parse(horaString);
 			Time horaCitaTime = Time.valueOf(horaCita);
-			System.out.println("dia " + fechaCita + " hora " + horaCita + " idServicio " + idServicio );
-
 			try 
 			{
-				System.out.println("confirmar...");
 				// Llamar al método para agregar la cita a la base de datos
 				nuevaCita.agregarCita(horaCita, fechaCita, idCliente, idServicio, idTrabajadorFK);
 				request.setAttribute("cita", "<div class='alert alert-success text-center' role='alert'><h3 class='text-success'>Cita guardada correctamente.</h3></div>");
@@ -164,7 +158,6 @@ public class Controlador extends HttpServlet {
 			{
 				throw new IllegalArgumentException("Error debe indicar la fecha" + e.getMessage());
 			}
-
 		}
 
 		else if (todo.equals("volver"))

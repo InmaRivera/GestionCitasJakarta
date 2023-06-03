@@ -25,7 +25,8 @@
 	src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
-
+<link rel="stylesheet"
+	href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
 <style>
 @import
 	url('https://fonts.googleapis.com/css2?family=Pacifico&family=Shantell+Sans:ital,wght@0,300;1,300&display=swap')
@@ -89,6 +90,41 @@ h1, h3, h4, p {
 	padding: 0px;
 	padding-left: 76px;
 	padding-right: 60px;
+}
+
+.calendar th {
+	background-color: #f2f2f2;
+	text-align: center;
+	font-weight: bold;
+	padding: 10px;
+	font-size: 18px;
+}
+
+.calendar td {
+	padding: 10px;
+	text-align: center;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.calendar td:hover {
+	background-color: #f2f2f2;
+}
+
+.calendar .available {
+	background-color: #d4edda;
+	color: #155724;
+}
+
+.calendar .unavailable {
+	background-color: #f8d7da;
+	color: #721c24;
+}
+
+.calendar .selected {
+	background-color: #007bff;
+	color: #fff;
 }
 
 .d-flex {
@@ -205,14 +241,13 @@ if (usuario == null) {
 		<div class="justify-content-center text-center pt-4">
 			<h3>Reserva una cita</h3>
 			<div class="text-center form-floating">
-				<label class="color:#000;" for="idServicio">Seleccione un
-					tratamiento/servicio:</label><br> <select class="form-select"
-					name="idServicio" id="idServicio"
+				<h4>Seleccione un tratamiento/servicio:</h4>
+				<select class="form-select" name="idServicio" id="idServicio"
 					aria-label="Floating label select example">
 					<!-- código java  -->
 					<%
-					ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
-					Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
+					/* 					ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
+					 */ Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
 					ArrayList<Servicios> listaservicios = new ArrayList<Servicios>();
 					//servicio.servicios(); //Llamamos al método para sacar la información de servicios de la base de datos
 					Servicios infoServicio = new Servicios();//Creamos objeto de la clase servicios
@@ -246,7 +281,7 @@ if (usuario == null) {
 						Date fechaActual = new Date();
 						%>
 						<h4>Calendario 2023</h4>
-						<!-- <p>Días disponible:</p> -->
+
 						<b><h4>
 								Hoy:<br>
 								<%=fechaActual%></h4></b>
@@ -264,7 +299,7 @@ if (usuario == null) {
 							<button type="button" class="btn btn-default">
 								<i class="glyphicon glyphicon-chevron-left"></i>
 							</button>
-							<button type="button" class="btn btn-default">
+							<button class="btn btn-default" id="btnFecha">
 								<i class="glyphicon glyphicon-calendar"></i>
 							</button>
 							<button type="button" class="btn btn-default">
@@ -274,25 +309,85 @@ if (usuario == null) {
 					</div>
 					<div>
 
-						<%
-						message = (String) request.getAttribute("error");
-						if (message != null) {
+						<br>
+						<h4>Seleccione el día aquí:</h4>
+						<input type="date" name="data-dia" id="fecha" value="data-dia"
+							required /> <br>
+						<h4>Días disponible este mes:</h4>
 
-							out.println(message);
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Lun</th>
+									<th>Mar</th>
+									<th>Mie</th>
+									<th>Jue</th>
+									<th>Vie</th>
+									<th>Sab</th>
+									<th>Dom</th>
+								</tr>
+							</thead>
+							<tbody>
+								<%
+								int dia = 0;
+								Gestiones horasDia = new Gestiones();
+								horasDia.horario();
+								horasDia.horarioDisponible(dia);
 
-						}
-						%>
-						<br> <label for="date">Seleccione el día:</label> <br> <input
-							type="date" class="calendario " name="data-dia" value="data-dia"
-							required />
+								// Obtener el día de la semana del primer día del mes
+								cal.set(Calendar.DAY_OF_MONTH, 1);
+								int primerDiaSemana = cal.get(Calendar.DAY_OF_WEEK);
+
+								// Calcular el número de celdas vacías antes del primer día del mes
+								int celdasVacias = primerDiaSemana - 2;
+
+								// Calcular el número total de celdas necesarias en la tabla
+								int numCeldasTotal = celdasVacias + numDias;
+
+								// Calcular el número de filas necesarias
+								int numFilas = (int) Math.ceil(numCeldasTotal / 7.0);
+
+								// Contadores para el día actual y la celda actual
+								int diaActual = 1;
+								int celdaActual = 1;
+
+								for (int fila = 1; fila <= numFilas; fila++) {
+								%>
+								<tr>
+									<%
+									for (int columna = 1; columna <= 7; columna++) {
+										if (celdaActual <= celdasVacias || diaActual > numDias) {
+									%>
+									<td></td>
+									<!-- Celda vacía antes del primer día y después del último día -->
+									<%
+									} else {
+									// Obtener el día de la semana para el día actual
+									cal.set(Calendar.DAY_OF_MONTH, diaActual);
+									int diaSemana = cal.get(Calendar.DAY_OF_WEEK);
+
+									// Determinar la clase CSS según el día de la semana
+									String clase = diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available";
+									%>
+									<td class="<%=clase%>" id="btnFecha"><%=diaActual%>
+									</td>
+									<%
+									diaActual++;
+									}
+									celdaActual++;
+									}
+									%>
+								</tr>
+								<%
+								}
+								%>
+							</tbody>
+						</table>
 					</div>
-					<br> <label> Seleccionar una hora:</label> <br> <select
-						class="hour" name="data-horas" id="data-horas">
+					<br>
+					<h4>Seleccionar una hora:</h4>
+					<select class="hour" name="data-horas" id="data-horas">
 						<%
-						int dia = 0;
-						Gestiones horasDia = new Gestiones();
-						horasDia.horario();
-						horasDia.horarioDisponible(dia);
 						ArrayList<LocalTime> horaDisponible = horasDia.horarioDisponible(dia);
 						for (int i = 0; i < horaDisponible.size(); i++) {
 							LocalTime hora = horaDisponible.get(i);
@@ -304,11 +399,10 @@ if (usuario == null) {
 						<%
 						}
 						%>
-					</select>
+					</select> <br> <br>
 				</div>
 			</div>
-			<br>
-			<br>
+
 		</div>
 		<div class="text-center">
 
@@ -318,24 +412,105 @@ if (usuario == null) {
 			<br> <br>
 		</div>
 	</form>
-	<!-- </form> -->
-	<!-- Cambio de colores  -->
+	<!-- habilitar scripts -->
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
 	<script
 		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
 	<script>
-		//mostramos mensaje de alerta al confirmar
+		// Seleccionar un día
+		$('.calendar td.available').on('click', function() {
+			$('.calendar td.selected').removeClass('selected');
+			$(this).addClass('selected');
+			// Aquí se hace la llamada para obtener los horarios disponibles para ese día
+			let horas = $(this).data('horas');
+			$('#horas-disponibles').html(horas);
+		});
+
+		//Desactivar fines de semana
+		var inputFecha = document.getElementById("fecha");
+
+		// Función para verificar si un día es sábado o domingo
+		function esFinDeSemana(date) {
+			var dia = date.getDay();
+			return dia === 6 || dia === 0; // 6 representa el sábado, 0 representa el domingo
+		}
+
+		// Evento para verificar la fecha seleccionada al cambiar el valor del campo
+		inputFecha.addEventListener("change",function() {
+		var fechaSeleccionada = new Date(this.value);
+
+		// Verificar si la fecha seleccionada es sábado o domingo
+			if (esFinDeSemana(fechaSeleccionada)) {
+			// Si es fin de semana, mostrar un mensaje o tomar alguna acción
+			alertify.confirm("Lo sentimos, los fines de semana no hay citas. Abrimos de lunes a viernes.");
+			this.value = ""; // Limpiar el valor del campo
+			}
+		});
+		//funcion para desactivar fines de semana del otro calendario
+		$(document).ready(function() {
+			// Inicializar el Datepicker de jQuery UI
+			$("#fecha").datepicker({
+				dateFormat : "yy-mm-dd", // Formato de fecha
+				showButtonPanel : true, // Mostrar panel de botones
+				minDate : 0, // Fecha mínima permitida (hoy)
+				maxDate : "+1M", // Fecha máxima permitida (1 mes a partir de hoy)
+				beforeShowDay : function(date) {
+					var day = date.getDay(); // Obtener el número del día de la semana (0: domingo, 1: lunes, etc.)
+					// Deshabilitar los sábados (día 6) y domingos (día 0)
+					if (day === 0 || day === 6) {
+						return [ false ];
+					} else {
+						return [ true ];
+					}
+				}
+
+			});
+
+			// Abrir el calendario al hacer clic en el botón
+			$("#btnFecha").click(function() {
+				$("#fecha").datepicker("show");
+			});
+		});
+
+		//Agregar dia del calendario seleccionado al input date
+		$(document).ready(function() {
+  var inputFecha = $("#fecha");
+
+  $("table.table tbody td.available").click(function() {
+    var diaSeleccionado = $(this).text().trim();
+    diaSeleccionado = diaSeleccionado.replace(/[^\d-]/g, "");
+
+    var partesFecha = inputFecha.val().split("-");
+    var nuevaFecha = "";
+
+    if (partesFecha.length === 3) {
+      nuevaFecha = partesFecha[0] + "-" + partesFecha[1] + "-" + diaSeleccionado;
+    } else {
+      var fechaActual = new Date();
+      var anioActual = fechaActual.getFullYear();
+      var mesActual = fechaActual.getMonth() + 1;
+      var mesFormato = mesActual < 10 ? "0" + mesActual : mesActual;
+
+      nuevaFecha = anioActual + "-" + mesFormato + "-" + diaSeleccionado;
+    }
+
+    inputFecha.val(nuevaFecha);
+  });
+});
+
+		
+		//mostramos mensaje de alerta al confirmar sin seleccionar día
 		function confirmarCita() {
 			let fecha = document.getElementById("data-dia");
 			alertify.confirm("Debe seleccionar un día", function() {
-				// Mensaje de confirmación
-				/* alertify.success("¡Su cita ha sido confirmada!"); */
-				/* window.location.href = "gestioncitasclientes.jsp"; */
-
 				if (fecha !== "data-dia") {
 					// Si la fecha no es válida, muestra el mensaje de error y cancela la cita
 					alertify.error("Debe seleccionar un día");
