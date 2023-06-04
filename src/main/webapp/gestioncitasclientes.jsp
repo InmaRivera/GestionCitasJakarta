@@ -192,9 +192,7 @@ if (usuario == null) {
 		<!-- <input type="hidden" name="todo" value="areacliente"> -->
 		<div class="alert alert-info" role="alert">
 			<table class="table table-hover">
-				<tr>
-					<th class='text-center'>Próxima cita</th>
-				</tr>
+				
 				<%
 				Gestiones gestiones = new Gestiones();//objeto clase gestiones
 				ArrayList<Servicios> listaServicios = gestiones.getServicios();
@@ -220,6 +218,30 @@ if (usuario == null) {
 						break; // Si encontramos la cita del cliente, podemos salir del bucle
 					}
 				}
+				
+				/* Citas cita = new Citas(); */
+				 listadoCitas = gestiones.getInfoCitas(idCliente);// Reemplaza esto con la forma correcta de obtener tus citas
+
+				for (Citas cita : listadoCitas) {
+				%>
+				<tr>
+					<th class='text-center'>Información de otras citas:</th>
+					<!-- <th class='text-center'>Opciones</th> -->
+				</tr>
+				<tr>
+					<form action="controlador" method="post">
+					<!-- Mostramos mensaje -->
+					 <td><%=mensaje%></td>
+				
+					<input type="hidden" name="todo" value="remove"> 
+					<input type="hidden" name="idCita" value="<%=cita.getIdCita()%>">
+						<td><input class="btn btn-danger" type="submit" value="Cancelar
+								cita"></td>
+					</form>
+				</tr>
+				
+				<%
+				}
 				//Si no tiene informamos también
 				if (!tieneCita) {
 					mensaje = "Aún no tiene citas.";
@@ -227,11 +249,14 @@ if (usuario == null) {
 
 				request.setAttribute("response", mensaje);
 				%>
-				<tr>
-					<!-- Mostramos mensaje -->
-					<td><%=mensaje%></td>
+					<tr>
+					<th class='text-center'>Próxima cita</th>
+					<!-- <th class='text-center'>Opciones</th> -->
 				</tr>
-
+					<tr>
+						<!-- Mostramos mensaje -->
+						<td><%=mensaje%></td>
+					</tr>
 			</table>
 		</div>
 	</div>
@@ -369,8 +394,7 @@ if (usuario == null) {
 									// Determinar la clase CSS según el día de la semana
 									String clase = diaSemana == Calendar.SATURDAY || diaSemana == Calendar.SUNDAY ? "unavailable" : "available";
 									%>
-									<td class="<%=clase%>" id="btnFecha"><%=diaActual%>
-									</td>
+									<td class="<%=clase%>" id="btnFecha"><%=diaActual%></td>
 									<%
 									diaActual++;
 									}
@@ -389,6 +413,7 @@ if (usuario == null) {
 					<select class="hour" name="data-horas" id="data-horas">
 						<%
 						ArrayList<LocalTime> horaDisponible = horasDia.horarioDisponible(dia);
+
 						for (int i = 0; i < horaDisponible.size(); i++) {
 							LocalTime hora = horaDisponible.get(i);
 							String horaString = String.format("%02d:%02d", hora.getHour(), hora.getMinute()); // Formatear manualmente la hora como "hh:mm"
@@ -444,69 +469,54 @@ if (usuario == null) {
 		}
 
 		// Evento para verificar la fecha seleccionada al cambiar el valor del campo
-		inputFecha.addEventListener("change",function() {
-		var fechaSeleccionada = new Date(this.value);
+		inputFecha
+				.addEventListener(
+						"change",
+						function() {
+							var fechaSeleccionada = new Date(this.value);
 
-		// Verificar si la fecha seleccionada es sábado o domingo
-			if (esFinDeSemana(fechaSeleccionada)) {
-			// Si es fin de semana, mostrar un mensaje o tomar alguna acción
-			alertify.confirm("Lo sentimos, los fines de semana no hay citas. Abrimos de lunes a viernes.");
-			this.value = ""; // Limpiar el valor del campo
-			}
-		});
-		//funcion para desactivar fines de semana del otro calendario
-		$(document).ready(function() {
-			// Inicializar el Datepicker de jQuery UI
-			$("#fecha").datepicker({
-				dateFormat : "yy-mm-dd", // Formato de fecha
-				showButtonPanel : true, // Mostrar panel de botones
-				minDate : 0, // Fecha mínima permitida (hoy)
-				maxDate : "+1M", // Fecha máxima permitida (1 mes a partir de hoy)
-				beforeShowDay : function(date) {
-					var day = date.getDay(); // Obtener el número del día de la semana (0: domingo, 1: lunes, etc.)
-					// Deshabilitar los sábados (día 6) y domingos (día 0)
-					if (day === 0 || day === 6) {
-						return [ false ];
-					} else {
-						return [ true ];
-					}
-				}
-
-			});
-
-			// Abrir el calendario al hacer clic en el botón
-			$("#btnFecha").click(function() {
-				$("#fecha").datepicker("show");
-			});
-		});
+							// Verificar si la fecha seleccionada es sábado o domingo
+							if (esFinDeSemana(fechaSeleccionada)) {
+								// Si es fin de semana, mostrar un mensaje o tomar alguna acción
+								alertify
+										.confirm("Lo sentimos, los fines de semana no hay citas. Abrimos de lunes a viernes.");
+								this.value = ""; // Limpiar el valor del campo
+							}
+						});
 
 		//Agregar dia del calendario seleccionado al input date
-		$(document).ready(function() {
-  var inputFecha = $("#fecha");
+		$(document).ready(
+				function() {
+					var inputFecha = $("#fecha");
 
-  $("table.table tbody td.available").click(function() {
-    var diaSeleccionado = $(this).text().trim();
-    diaSeleccionado = diaSeleccionado.replace(/[^\d-]/g, "");
+					$("table.table tbody td.available").click(
+							function() {
+								var diaSeleccionado = $(this).text().trim();
+								diaSeleccionado = diaSeleccionado.replace(
+										/[^\d-]/g, "");
 
-    var partesFecha = inputFecha.val().split("-");
-    var nuevaFecha = "";
+								var partesFecha = inputFecha.val().split("-");
+								var nuevaFecha = "";
 
-    if (partesFecha.length === 3) {
-      nuevaFecha = partesFecha[0] + "-" + partesFecha[1] + "-" + diaSeleccionado;
-    } else {
-      var fechaActual = new Date();
-      var anioActual = fechaActual.getFullYear();
-      var mesActual = fechaActual.getMonth() + 1;
-      var mesFormato = mesActual < 10 ? "0" + mesActual : mesActual;
+								if (partesFecha.length === 3) {
+									nuevaFecha = partesFecha[0] + "-"
+											+ partesFecha[1] + "-"
+											+ diaSeleccionado;
+								} else {
+									var fechaActual = new Date();
+									var anioActual = fechaActual.getFullYear();
+									var mesActual = fechaActual.getMonth() + 1;
+									var mesFormato = mesActual < 10 ? "0"
+											+ mesActual : mesActual;
 
-      nuevaFecha = anioActual + "-" + mesFormato + "-" + diaSeleccionado;
-    }
+									nuevaFecha = anioActual + "-" + mesFormato
+											+ "-" + diaSeleccionado;
+								}
 
-    inputFecha.val(nuevaFecha);
-  });
-});
+								inputFecha.val(nuevaFecha);
+							});
+				});
 
-		
 		//mostramos mensaje de alerta al confirmar sin seleccionar día
 		function confirmarCita() {
 			let fecha = document.getElementById("data-dia");

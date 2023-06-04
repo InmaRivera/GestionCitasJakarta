@@ -143,6 +143,7 @@ public class Controlador extends HttpServlet {
 			String dia = request.getParameter("data-dia");//recogemos día seleccionado
 			LocalDate fechaCita = LocalDate.parse(dia);// Parseamos la fecha actual
 			String horaString = request.getParameter("data-horas");
+	
 			LocalTime horaCita;
 			horaCita = LocalTime.parse(horaString);
 			Time horaCitaTime = Time.valueOf(horaCita);
@@ -158,6 +159,26 @@ public class Controlador extends HttpServlet {
 			{
 				throw new IllegalArgumentException("Error debe indicar la fecha" + e.getMessage());
 			}
+		
+		}
+		else if (todo.equals("remove"))
+		{
+			Gestiones gestion = new Gestiones();
+			Servicios cita = new Servicios();
+			Citas citas = new Citas();			
+			int idCita = Integer.parseInt(request.getParameter("idCita")); // Obtener el ID de la cita desde el formulario
+			idCliente = (int) session.getAttribute("idCliente"); // Obtener el ID del cliente desde la sesión
+			
+			try
+			{
+				gestion.eliminarCita(idCita);
+				request.setAttribute("cita", "<div class='alert alert-success text-center' role='alert'><h3 class='text-success'>Su cita ha sido eliminada correctamente.</h3></div>");
+				nextPage = "/gestioncitasclientes.jsp";
+			} catch (SQLException e)
+			{				
+				e.printStackTrace();
+			}
+					
 		}
 
 		else if (todo.equals("volver"))

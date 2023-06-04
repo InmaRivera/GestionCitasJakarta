@@ -2,6 +2,7 @@ package gestioncitas;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -280,6 +281,23 @@ public class Gestiones
 
 		return listaCitas;	              
 
+	}
+//Eliminar cita
+	public void eliminarCita(int idCita) throws SQLException
+	{
+		try
+		{
+			pool.Conectar();
+			String borrarCita = "DELETE FROM citas WHERE idCita = "+idCita+";";
+			pool.statement.execute(borrarCita);
+		}
+		catch (ServletException e)
+		{
+
+			e.printStackTrace();
+		}
+
+		pool.cerrarConexion();
 	}
 
 	//Devolver la información de servicios

@@ -62,7 +62,7 @@
 									<img
 										src="https://i.pinimg.com/originals/58/c2/53/58c253f9dbde6c2ed7f74eedc4ddc7a2.jpg"
 										style="width: 185px;" alt="logo">
-									
+
 									<h4 class="mt-1 mb-5 pb-1">Acceder a tu perfil</h4>
 
 								</div>
@@ -98,16 +98,11 @@
 									<div
 										class="d-flex align-items-center justify-content-center pb-4">
 										<p class="mb-0 me-2">¿No tienes cuenta?</p>
-										<!-- <form name="login" action="controlador" method="POST"> -->
-											<a type="button" class="btn btn-outline-danger"
-												href="registro.jsp">Crea una nueva</a>
 
-										</form>
-
+										<a type="button" class="btn btn-outline-danger"
+											href="registro.jsp">Crea una nueva</a>
 									</div>
-
-								<!-- </form> -->
-
+								</form>
 							</div>
 						</div>
 					</div>
