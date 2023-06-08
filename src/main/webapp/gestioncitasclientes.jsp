@@ -4,6 +4,7 @@
 <%@ page import="java.time.LocalTime"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Date"%>
+<%@ page import="java.time.LocalDate"%>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -83,12 +84,15 @@ h1, h3, h4, p {
 	text-shadow: #fff 3px 6px 4px;
 	text-align: center;
 }
-
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 2px;
+    margin-bottom: 30px;
+}
 .calendar {
 	border: 1px solid #ddd;
 	background-color: #DBF7FD;
 	padding: 0px;
-	padding-left: 76px;
+	padding-left: 60px;
 	padding-right: 60px;
 }
 
@@ -192,15 +196,18 @@ if (usuario == null) {
 		<!-- <input type="hidden" name="todo" value="areacliente"> -->
 		<div class="alert alert-info" role="alert">
 			<table class="table table-hover">
-				
+	<tr>
+					<th class='text-center'>Información de otras citas:</th>
+					<!-- <th class='text-center'>Opciones</th> -->
+				</tr>
 				<%
 				Gestiones gestiones = new Gestiones();//objeto clase gestiones
 				ArrayList<Servicios> listaServicios = gestiones.getServicios();
 				ArrayList<Citas> listadoCitas = gestiones.getInfoCitas(idCliente);
 				boolean tieneCita = false;
-
+				for (Citas cita : listadoCitas) {
 				for (int j = 0; j < listadoCitas.size(); j++) {
-					Citas cita = listadoCitas.get(j);
+					/* Citas cita = listadoCitas.get(j); */
 					Servicios servicio = listaServicios.get(j);
 					//buscamos el idCliente para saber si tiene cita
 					if (cita.getIdClienteFK() == idCliente) {
@@ -222,24 +229,21 @@ if (usuario == null) {
 				/* Citas cita = new Citas(); */
 				 listadoCitas = gestiones.getInfoCitas(idCliente);// Reemplaza esto con la forma correcta de obtener tus citas
 
-				for (Citas cita : listadoCitas) {
+				
 				%>
-				<tr>
-					<th class='text-center'>Información de otras citas:</th>
-					<!-- <th class='text-center'>Opciones</th> -->
-				</tr>
+			
 				<tr>
 					<form action="controlador" method="post">
-					<!-- Mostramos mensaje -->
-					 <td><%=mensaje%></td>
-				
-					<input type="hidden" name="todo" value="remove"> 
-					<input type="hidden" name="idCita" value="<%=cita.getIdCita()%>">
-						<td><input class="btn btn-danger" type="submit" value="Cancelar
+						<!-- Mostramos mensaje -->
+						<td><%=mensaje%></td> <input type="hidden" name="todo"
+							value="remove"> <input type="hidden" name="idCita"
+							value="<%=cita.getIdCita()%>">
+					<td><input class="btn btn-danger" type="submit"
+						value="Cancelar
 								cita"></td>
 					</form>
 				</tr>
-				
+
 				<%
 				}
 				//Si no tiene informamos también
@@ -249,21 +253,21 @@ if (usuario == null) {
 
 				request.setAttribute("response", mensaje);
 				%>
-					<tr>
+				<tr>
 					<th class='text-center'>Próxima cita</th>
 					<!-- <th class='text-center'>Opciones</th> -->
 				</tr>
-					<tr>
-						<!-- Mostramos mensaje -->
-						<td><%=mensaje%></td>
-					</tr>
+				<tr>
+					<!-- Mostramos mensaje -->
+					<td><%=mensaje%></td>
+				</tr>
 			</table>
 		</div>
 	</div>
 	<hr>
 	<form name="formulario" action="controlador" method="POST">
 		<input type="hidden" name="todo" value="formulario">
-		<div class="justify-content-center text-center pt-4">
+		<div class="justify-content-center text-center pt-1">
 			<h3>Reserva una cita</h3>
 			<div class="text-center form-floating">
 				<h4>Seleccione un tratamiento/servicio:</h4>
@@ -356,8 +360,8 @@ if (usuario == null) {
 								<%
 								int dia = 0;
 								Gestiones horasDia = new Gestiones();
-								horasDia.horario();
-								horasDia.horarioDisponible(dia);
+								
+								 /* horasDia.horarioDisponible(dia);  */
 
 								// Obtener el día de la semana del primer día del mes
 								cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -412,8 +416,13 @@ if (usuario == null) {
 					<h4>Seleccionar una hora:</h4>
 					<select class="hour" name="data-horas" id="data-horas">
 						<%
-						ArrayList<LocalTime> horaDisponible = horasDia.horarioDisponible(dia);
-
+					 LocalDate fechaCita = LocalDate.now();
+						LocalDate dayActual = LocalDate.now();
+						dia = dayActual.getDayOfMonth();
+						 ArrayList<LocalTime> horaDisponible = horasDia.horarioDisponible(dia); 
+						/* ArrayList<LocalTime> horasOcupadas = gestiones.horarioOcupado(dia); */
+ 				
+						
 						for (int i = 0; i < horaDisponible.size(); i++) {
 							LocalTime hora = horaDisponible.get(i);
 							String horaString = String.format("%02d:%02d", hora.getHour(), hora.getMinute()); // Formatear manualmente la hora como "hh:mm"

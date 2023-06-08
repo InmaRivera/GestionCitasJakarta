@@ -51,6 +51,9 @@ a {
 		border-bottom-right-radius: .3rem;
 	}
 }
+.btn-spacing {
+    margin-right: 10px; /*Espacio entre los botones */
+}
 </style>
 
 <body>
@@ -150,7 +153,8 @@ a {
 												<!-- <form name="registro" action="controlador" method="POST">  -->
 
 												<button type="submit" name="todo" value="registro"
-													class="btn btn-primary btn-lg gradient-custom-2 d-flex ">Registrarte</button>
+													class="btn btn-primary btn-lg gradient-custom-2 d-flex btn-spacing">Registrarte</button>
+													
 												<input type="submit" class="btn btn-danger btn-lg margin"
 													name="todo" value="volver">
 											</div>

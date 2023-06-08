@@ -9,11 +9,13 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
+
 public class Gestiones
 {
 	// conectamos a la base de datos llamando al pool
@@ -129,63 +131,85 @@ public class Gestiones
 		pool.cerrarConexion();
 
 	}
-	//horas disponibles
-	public ArrayList<Hora> horario() {
-		ArrayList<Hora> horas = new ArrayList<>();
-		// Aquí añades las horas disponibles a la lista
-		horas.add(new Hora(10, 0));
-		horas.add(new Hora(11, 0));
-		horas.add(new Hora(12, 0));
-		horas.add(new Hora(13, 0));
-		horas.add(new Hora(14, 0));
-		horas.add(new Hora(16, 0));
-		horas.add(new Hora(17, 0));
-		horas.add(new Hora(18, 0));
-		horas.add(new Hora(19, 0));
-		horas.add(new Hora(20, 0));
-		return horas;
-
-
-	}
-	public ArrayList<LocalTime> horarioDisponible(int dia)
-	{
-		ArrayList<LocalTime> horasDisponibles = new ArrayList<LocalTime>();
-		horasDisponibles.clear();
-		try
-		{
+	//mostrar horas disponibles
+	@SuppressWarnings("unlikely-arg-type")
+	public ArrayList<LocalTime> horarioDisponible(int dia) throws SQLException {
+		ArrayList<LocalTime> horasDisponibles = new ArrayList<>();
+		try {
+			ArrayList<LocalTime> horasOcupadas = horarioOcupado(dia);
 			pool.Conectar();
-			// Obtener el horario actual
-			//			Time horasTime = new Time(0);
-			//lista de horas
 
 			// Agregar horas desde las 10:00 a las 14:00
 			LocalTime hora = LocalTime.of(10, 0);
-			while (hora.isBefore(LocalTime.of(15, 0))) {
-				horasDisponibles.add(hora);
-				hora = hora.plusHours(1);
+			while (hora.isBefore(LocalTime.of(14, 0))) {
+				//Si horas estan ocupadas
+				if (horasOcupadas.contains(horasDisponibles)) 
+				{	            	
+					//horas ocupdadas
+					horasOcupadas.remove(horasDisponibles);
+				}
+				else
+				{	            	
+					//sino agregamos horas disponibles al add
+					horasDisponibles.add(hora);
+					hora = hora.plusHours(1);
+				}
+				
 			}
 
 			// Agregar horas desde las 16:00 a las 20:00
 			hora = LocalTime.of(16, 0);
 			while (hora.isBefore(LocalTime.of(20, 0))) {
-				horasDisponibles.add(hora);
-				hora = hora.plusHours(1);
+				if (horasOcupadas.contains(hora)) 
+				{
+					//horas ocupadas
+					horasDisponibles.contains(horasOcupadas);
+					horasDisponibles.remove(hora);
+		
+				}
+				else
+				{
+					horasDisponibles.add(hora);
+					hora = hora.plusHours(1);
+				}
+
 			}
-			//agregamos a la lista
-			horasDisponibles.add(hora);
-		}
-		catch (ServletException e)
-		{
+		} catch (ServletException e) {
 			e.printStackTrace();
 		}
 
 		pool.cerrarConexion();
 		return horasDisponibles;
-
-
 	}
-	//Agregar cita nueva 
 
+	//Metodo horas ocupadas
+	public ArrayList<LocalTime> horarioOcupado(int dia) throws SQLException {
+		ArrayList<LocalTime> horasOcupadas = new ArrayList<LocalTime>();
+
+		try {
+			pool.Conectar();
+			//Recogemos las horas seleccionadas en la base
+			String query = "SELECT horaCita FROM citas WHERE fechaCita = ?";
+			PreparedStatement statement = pool.conn.prepareStatement(query);
+			statement.setDate(1, java.sql.Date.valueOf(LocalDate.of(2023, 6, dia))); // parseamos la fecha en date
+
+			ResultSet rs = statement.executeQuery();
+
+			while (rs.next()) {
+				LocalTime horaCita = rs.getTime("horaCita").toLocalTime();
+				horasOcupadas.add(horaCita);
+			}
+		} catch (ServletException | SQLException e) {
+			e.printStackTrace();
+		}
+
+		pool.cerrarConexion();
+		return horasOcupadas;
+	}
+
+
+
+	//Agregar cita nueva 
 	public void agregarCita(LocalTime horaCita, LocalDate fechaCita, int idClienteFK, int idServicioFK, int idTrabajadorFK ) throws SQLException
 	{
 		try
@@ -251,7 +275,7 @@ public class Gestiones
 		try
 		{
 			pool.Conectar();
-			String citas = "select * from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente = "+idCliente+";";			
+			String citas = "select * from citas join clientes on citas.idClienteFK = clientes.idCliente join usuarios on usuarios.idUsuario = clientes.idUsuarioFK where fechaCita >= CURRENT_DATE() AND idCliente = "+idCliente+" ORDER BY fechaCita ASC;";			
 			ResultSet rs = pool.statement.executeQuery(citas);
 			Citas cita;
 			try
@@ -282,7 +306,7 @@ public class Gestiones
 		return listaCitas;	              
 
 	}
-//Eliminar cita
+	//Eliminar cita
 	public void eliminarCita(int idCita) throws SQLException
 	{
 		try
@@ -299,6 +323,8 @@ public class Gestiones
 
 		pool.cerrarConexion();
 	}
+
+
 
 	//Devolver la información de servicios
 	public int tamano()
@@ -337,6 +363,7 @@ public class Gestiones
 	{
 		return listadoCitas.get(idCita).getIdClienteFK();
 	}
+
 	//metodo horas
 	public class Hora {
 		private int hora;

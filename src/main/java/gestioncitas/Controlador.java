@@ -165,7 +165,8 @@ public class Controlador extends HttpServlet {
 		{
 			Gestiones gestion = new Gestiones();
 			Servicios cita = new Servicios();
-			Citas citas = new Citas();			
+			Citas citas = new Citas();
+			
 			int idCita = Integer.parseInt(request.getParameter("idCita")); // Obtener el ID de la cita desde el formulario
 			idCliente = (int) session.getAttribute("idCliente"); // Obtener el ID del cliente desde la sesión
 			
