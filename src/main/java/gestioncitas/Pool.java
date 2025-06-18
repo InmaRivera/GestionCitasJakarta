@@ -3,10 +3,11 @@ package gestioncitas;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.DriverManager;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import javax.sql.DataSource;
 /**
  * 
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
  * Clase de conexion pool para el proyecto gestion citas
  *
  */
+@SuppressWarnings("unused")
 public class Pool
 {
 	Connection conn = null;

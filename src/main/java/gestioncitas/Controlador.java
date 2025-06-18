@@ -9,15 +9,15 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class Controlador
@@ -60,7 +60,20 @@ public class Controlador extends HttpServlet {
 		// Recupera la sesión actual o crea una nueva si no existe
 		HttpSession session = request.getSession(true);
 		String usuario = (String)session.getAttribute("usuario");
-		int idCliente = (int)session.getAttribute("idCliente");
+		if (usuario == null) {
+		    response.sendRedirect("login.jsp");
+		    return;
+		}
+
+		//int idCliente = ((Integer)session.getAttribute("idCliente")).intValue();
+		Integer idClienteObj = (Integer) session.getAttribute("idCliente");
+		if (idClienteObj == null) {
+		    // Si no está logueado o no hay sesión válida, redirige a login
+		    response.sendRedirect("login.jsp");
+		    return;
+		}
+		int idCliente = idClienteObj.intValue();
+
 		ArrayList<Citas> listaCitas = new ArrayList<Citas>();
 		@SuppressWarnings("unchecked")
 		ArrayList<Citas> elCalendario =  (ArrayList<Citas>)

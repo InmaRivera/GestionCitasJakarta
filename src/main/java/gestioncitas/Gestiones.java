@@ -13,9 +13,10 @@ import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpSession;
 
+@SuppressWarnings("unused")
 public class Gestiones
 {
 	// conectamos a la base de datos llamando al pool

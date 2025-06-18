@@ -219,7 +219,7 @@ if (usuario == null) {
 						String hora = cita.getHoraCita().toString();
 						String[] partesHora = hora.split(":");
 
-						mensaje = "Su próxima cita es <b>" + partesFecha[2] + "-" + partesFecha[1] + "-" + partesFecha[0]
+						mensaje = "Su próxima cita es: <b>" + partesFecha[2] + "-" + partesFecha[1] + "-" + partesFecha[0]
 						+ "</b> a las <b>" + partesHora[0] + ":" + partesHora[1] + " h</b> para " + servicio.getTipoServicio();
 						tieneCita = true;
 						break; // Si encontramos la cita del cliente, podemos salir del bucle
@@ -239,8 +239,7 @@ if (usuario == null) {
 							value="remove"> <input type="hidden" name="idCita"
 							value="<%=cita.getIdCita()%>">
 					<td><input class="btn btn-danger" type="submit"
-						value="Cancelar
-								cita"></td>
+						value="Cancelar cita"></td>
 					</form>
 				</tr>
 
@@ -275,10 +274,10 @@ if (usuario == null) {
 					aria-label="Floating label select example">
 					<!-- código java  -->
 					<%
-					/* 					ArrayList<Citas> horasDisponibles = (ArrayList<Citas>) session.getAttribute("elCalendario");
-					 */ Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
+				
+					Gestiones servicio = new Gestiones();//Creamos objeto de la clase modelo gestiones donde creamos el método
 					ArrayList<Servicios> listaservicios = new ArrayList<Servicios>();
-					//servicio.servicios(); //Llamamos al método para sacar la información de servicios de la base de datos
+					
 					Servicios infoServicio = new Servicios();//Creamos objeto de la clase servicios
 					servicio.getServicios();
 					//Creamos bucle para mostrar todos los servicios disponibles
@@ -309,10 +308,9 @@ if (usuario == null) {
 						/* Controlador formato = new Controlador(); */
 						Date fechaActual = new Date();
 						%>
-						<h4>Calendario 2023</h4>
+						<h2>Calendario </h2>
 
-						<b><h4>
-								Hoy:<br>
+						<b><h4>	Hoy:<br>
 								<%=fechaActual%></h4></b>
 						<%
 						// Obtener el número de días del mes actual
@@ -361,8 +359,6 @@ if (usuario == null) {
 								int dia = 0;
 								Gestiones horasDia = new Gestiones();
 								
-								 /* horasDia.horarioDisponible(dia);  */
-
 								// Obtener el día de la semana del primer día del mes
 								cal.set(Calendar.DAY_OF_MONTH, 1);
 								int primerDiaSemana = cal.get(Calendar.DAY_OF_WEEK);
